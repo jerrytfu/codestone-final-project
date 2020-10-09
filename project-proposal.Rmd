@@ -4,24 +4,37 @@ subtitle: "Due Friday, October 9, 11:59 PM"
 author: "Taalin, Anna, Edgar, Jerry"
 output: pdf_document
 ---
+### Project Proposal
+CodeStone chose to explore the data from the World Happiness Reports of 2015 to 2020, published by the Sustainable Development Network. Considering the concerning state of our world in 2020, including the worsening effects of climate change, a global pandemic, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within each nation and across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust (Helliwell et al., 2012). Eight years later, these paradoxes persit, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
 
-```{r load-dataset, message = FALSE, warning = FALSE}
+Generally, we want to explore the following question: which factors correlate most strongly to happiness across the globe? Using this question, we also plan on examining whether these vary by region, and what factors have the strongest correlations. With these results we hope to be able to offer guidance to countries on which aspects of their citizens’ life they might want to focus on improving. Our hypothesis is that happiness will be strongly correlated to measures of freedom, life expectancy, and economy (GDP per capita). We also expect happiness to vary by region.
+
+As aforementioned, the data set we’ll be using comes from the World Happiness Report (WHR), that being the most available and reliable scaled measurement of happiness. Specifically, we’ll be using the 2018-2019 World Happiness Reports, as we’d like to track time-consistent correlations to happiness. Unfortunately, not only do the World Happiness Reports vary in columns and column names, they also vary in the scale of their variables. For example, the range for Freedom in 2020 is about 0.397 - 0.975, while in 2019, it is 0 - 0.631. Therefore, we chose two most recent years, which were exactly the same in both the variables they looked at, and how they evaluated those variables. String data includes country and region. The rest of the values are doubles indicating Happiness Score, GDP per capita, Life Expectancy, Perceptions of Corruption, Generosity, Freedom to Make Life Choices, and Social Support/Family. According to the WHR, this data is derived from the Gallup World Poll, a systematic telephone survey and in person interviews in over 160 countries whose surveys claim to represent 80%+ of the population (2014). The calls are made via random phone number generation and randomly selecting households (GWP, 2014). 
+
+https://www.gallup.com/178667/gallup-world-poll-work.aspx
+
+https://worldhappiness.report/faq/
+
+https://www.kaggle.com/mathurinache/world-happiness-report
+
+
+Helliwell, John F., Richard Layard, and Jeffrey Sachs, eds. 2012. World Happiness Report 2012. New York: UN Sustainable Development Solutions Network.
+
+Gallup World Poll. (2014, October 14). How does the Gallup world poll work? Gallup.com. https://www.gallup.com/178667/gallup-world-poll-work.aspx
+
+```{r setup-packages, message = FALSE, warning = FALSE}
 library(tidyverse)
-library(plyr) #package for rbind.fill command which automatically fills missing values with NA
+library(plyr) #package for join command
+```
 
-#Do we want to only look at two years, or look at all the years, looking at just two years would be much simpler, but looking at more years might be more interesting.
-report_2015 <- read_csv("data/2015.csv") %>% 
-  mutate(year = "2015")
-report_2016 <- read_csv("data/2016.csv") %>% 
-  mutate(year = "2016")
-report_2017 <- read_csv("data/2017.csv") %>% 
-  mutate(year = "2017")
+```{r load-datasets, message = FALSE, warning = FALSE}
 report_2018 <- read_csv("data/2018.csv") %>% 
-  mutate(year = "2018")
+  mutate(year = "2018") %>% 
+  mutate(`Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
 report_2019 <- read_csv("data/2019.csv") %>% 
   mutate(year = "2019")
-report_2020 <- read_csv("data/2020.csv") %>% 
-  mutate(year = "2020")
 
-worldhappiness <- rbind.fill(report_2015, report_2016, report_2017, report_2018, report_2019, report_2020)
+worldhappiness <- full_join(report_2018, report_2019)
+                  
+glimpse(worldhappiness)
 ```
