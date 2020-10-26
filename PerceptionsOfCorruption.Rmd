@@ -20,6 +20,32 @@ report_2019 <- read_csv("data/2019.csv") %>%
 worldhappiness <- full_join(report_2018, report_2019)
 ```
 
+### Organizing data
+```{r data}
+corruption <- worldhappiness %>% 
+  filter(! is.na(`Perceptions of corruption`)) %>% 
+  select(Score, `Perceptions of corruption`, year)
+
+year2019 <- corruption %>% 
+  filter(year == "2019")
+year2018 <- corruption %>% 
+  filter(year == "2018")
+```
+
+### Correlational stats
+
+```{r correlations}
+corruption %>% 
+  summarize(r_overall = cor(Score, `Perceptions of corruption`))
+
+year2019 %>% 
+  summarize(r_2019 = cor(Score, `Perceptions of corruption`))
+
+year2018 %>% 
+  summarize(r_2018 = cor(Score, `Perceptions of corruption`))
+
+```
+
 
 ### Linear model and 95% confidence interval 
 
@@ -30,6 +56,18 @@ m_corrupt <- lm(Score ~ `Perceptions of corruption`, data = worldhappiness)
 m_corrupt %>%
   tidy() %>%
   select(term, estimate) 
+
+
+# Visualization of linear model
+ggplot(data = corruption, aes(x = `Perceptions of corruption`,
+                              y = Score)) + 
+  geom_point(size = 0.8) + 
+  geom_smooth(method = lm, color = "blue", size = 0.5) +
+  labs(title = "Linear model for relationship between perceptions of corruption
+and overall happiness score",
+       subtitle = "Moderate, positive assocation",
+       x = "Perceptions of corruption score",
+       y = "Overall happiness score")
 
 #Confidence interval for linear model above 
 broom::confint_tidy(m_corrupt, conf.level = 0.95) %>% 
