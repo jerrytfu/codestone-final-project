@@ -11,6 +11,7 @@ library(plyr) #package for join command
 library(broom)
 
 knitr::opts_chunk$set(echo = TRUE)
+report_2020 <- read_csv("data/2020.csv")
 report_2018 <- read_csv("data/2018.csv") %>% 
   mutate(year = "2018") %>% 
   mutate(`Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
@@ -18,6 +19,7 @@ report_2019 <- read_csv("data/2019.csv") %>%
   mutate(year = "2019")
 
 worldhappiness <- full_join(report_2018, report_2019)
+#wrldhappy <- cbind(worldhappiness, report_2020$`Regional indicator`)
 ```
 
 ### Organizing data
@@ -46,6 +48,40 @@ year2018 %>%
 
 ```
 
+### Conditions for linear model 
+
+```{r lm-conditions}
+m_corrupt_aug <- augment(m_trees)
+m_corrupt_aug %>%
+  slice(1:3)
+```
+Independence
+Question of whether countries are independent from each other...
+
+Equal Variance, Linearity 
+```{r equal-variance}
+ggplot(m_corrupt_aug, mapping = aes(x = .fitted, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0, lwd = 2, col = "red", lty = 2) +
+  labs(x = "Predicted overall score", y = "Residuals")
+```
+
+The spread of residuals does not appear to be equal around the line y=0, indicating a lack of equal variance and linearity.
+
+Normality
+```{r normality}
+ggplot(m_corrupt_aug, mapping = aes(x = .resid)) +
+  geom_histogram(bins = 15) + 
+  labs(x = "Residuals")
+
+ggplot(m_corrupt_aug, mapping = aes(sample = .resid)) +
+  stat_qq() + 
+  stat_qq_line()
+```
+Both visualizations appear to be relatively normal.
+
+
+Considering that the conditions for equal variance and linearity are clearly not met, while it is unclear whether the conditions for independence and normality are met, linear regression is not appropriate for this untransformed data. 
 
 ### Linear model and 95% confidence interval 
 
@@ -97,3 +133,13 @@ Considering that our p-value is less that $\alpha =$ 0.05, we can reject the nul
 
 
 ### Multiple regression for all the factors we are evaluating
+
+```{r multiple-reg-for-all}
+m_happy <- lm(Score ~ `Perceptions of corruption` + `Social support` +
+                `GDP per capita`, data = worldhappiness)
+
+m_happy %>% 
+  tidy() %>%
+  select(term, estimate) 
+  
+```
