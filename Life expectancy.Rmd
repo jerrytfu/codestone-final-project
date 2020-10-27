@@ -71,17 +71,19 @@ and overall happiness score",
        y = "Overall Happiness Score")
 
 ```
-### T-test 
+### Chi.squared-test 
 
 ```{r}
-worldhappiness <- worldhappiness %>%
+worldhappiness1 <- worldhappiness %>%
   mutate(happyrating = case_when(Score <= 4.5 ~ "unhappy",
                                  Score > 4.5 & Score <= 6 ~ "moderately happy", 
                                  Score > 6 ~ "happy")) %>%
-  mutate(life_rating = case_when(Healthy_life_expectancy <= 0.5 ~ "poor",
-                                 Healthy_life_expectancy > 0.5 & 
-                                   Healthy_life_expectancy <= 0.8 ~ "moderate",
-                                Healthy_life_expectancy` > 0.8 ~ "good"))
+  mutate(life_rating = case_when(`Healthy life expectancy` <= 0.5 ~ "poor",
+                                 `Healthy life expectancy` > 0.5 & 
+                                `Healthy life expectancy` <= 0.8 ~ "moderate",
+                                `Healthy life expectancy` > 0.8 ~ "good"))
+
+chisq.test(worldhappiness1$happyrating, worldhappiness1$life_rating)
 
 ```
 
