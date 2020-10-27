@@ -29,13 +29,16 @@ library(plyr) #package for join command
 
 ```{r load-datasets, message = FALSE, warning = FALSE}
 report_2018 <- read_csv("data/2018.csv") %>% 
-  mutate(year = "2018") %>% 
-  mutate(`Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
+  mutate(year = "2018",
+         `Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
 report_2019 <- read_csv("data/2019.csv") %>% 
   mutate(year = "2019")
 
+names(report_2018) <- str_replace_all(names(report_2018), c(" " = "_"))
+names(report_2019) <- str_replace_all(names(report_2018), c(" " = "_"))
+
 worldhappiness <- full_join(report_2018, report_2019)
-names(worldhappiness) <- str_replace_all(names(worldhappiness), c(" " = "_") )  
 
 glimpse(worldhappiness)
 ```
+https://dnidzgorski.wordpress.com/2017/06/09/r-fix-column-names-spaces/
