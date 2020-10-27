@@ -136,7 +136,7 @@ Considering that our p-value is less that $\alpha =$ 0.05, we can reject the nul
 
 ```{r multiple-reg-for-all}
 m_happy <- lm(Score ~ `Perceptions of corruption` + `Social support` +
-                `GDP per capita`, data = worldhappiness)
+                `GDP per capita` + `Healthy life expectancy`, data = worldhappiness)
 
 m_happy %>% 
   tidy() %>%
