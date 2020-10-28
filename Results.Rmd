@@ -65,7 +65,6 @@ ggplot(happiness_score_map, aes(x = long, y = lat, group = group)) +
 ```
 https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
 
-```{r chi-sq-region-score, warning = FALSE}
-chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
+```{r chi-sq-region-score}
+chisq.test(worldhappiness$Score, worldhappiness$Region)
 ```
-
