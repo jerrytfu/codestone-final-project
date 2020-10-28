@@ -50,13 +50,10 @@ worldhappiness <- worldhappiness %>%
   mutate(Region = ifelse(Country == "Angola", "Middle East and North Africa", Region)) %>% 
   mutate(Region = ifelse(Country == "Syria", "Middle East and North Africa", Region)) %>% 
   mutate(Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
-
-worldhappiness %>% 
-  filter(is.na(Region))
 ```
 
-### Survey Visualizations
-```{r world-map, fig.width = 10, fig.height = 4.5}
+### Is there a relationship between region of the world and happiness score?
+```{r world-map, fig.width = 10, fig.height = 5}
 world_map <- map_data("world") %>% 
   mutate(region = ifelse(region == "USA", "United States", region)) %>% 
   mutate(region = ifelse(region == "Democratic Republic of the Congo", "Congo (Kinshasa)", region))
@@ -67,3 +64,8 @@ ggplot(happiness_score_map, aes(x = long, y = lat, group = group)) +
   scale_fill_viridis_c(option = "D")
 ```
 https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
+
+```{r chi-sq-region-score, warning = FALSE}
+chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
+```
+
