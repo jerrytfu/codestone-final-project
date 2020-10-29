@@ -61,6 +61,7 @@ world_map <- map_data("world") %>%
 happiness_score_map <- left_join(worldhappiness, world_map, by = c("Country" = "region"))
 ggplot(happiness_score_map, aes(x = long, y = lat, group = group)) +
   geom_polygon(aes(fill = Score), color = "white") +
+  labs(title = "World Map", subtitle = "colored by Happiness Score", x = "", y = "") +
   scale_fill_viridis_c(option = "D")
 ```
 https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
