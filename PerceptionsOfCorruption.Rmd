@@ -32,6 +32,8 @@ year2019 <- corruption %>%
   filter(year == "2019")
 year2018 <- corruption %>% 
   filter(year == "2018")
+
+view(worldhappiness)
 ```
 
 ### Correlational stats
@@ -51,7 +53,7 @@ year2018 %>%
 ### Conditions for linear model 
 
 ```{r lm-conditions}
-m_corrupt_aug <- augment(m_trees)
+m_corrupt_aug <- augment(m_corrupt)
 m_corrupt_aug %>%
   slice(1:3)
 ```
