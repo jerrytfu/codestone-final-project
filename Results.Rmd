@@ -93,7 +93,7 @@ glance(m_happy)$r.squared
 
 ### Perceptions of Corruption 
 
-```{r linear-model-corrupt, message = FALSEXS}
+```{r linear-model-corrupt, message = FALSE, warning = FALSE}
 # Linear model for relationship between perceptions of corruption score and overall happiness score
 m_corrupt <- lm(Score ~ Perceptions_of_corruption, data = worldhappiness)
 
@@ -103,7 +103,7 @@ m_corrupt %>%
 
 
 # Visualization of linear model
-ggplot(data = corruption, aes(x = `Perceptions of corruption`,
+ggplot(data = m_corrupt, aes(x = Perceptions_of_corruption,
                               y = Score)) + 
   geom_point(size = 0.8) + 
   geom_smooth(method = lm, color = "blue", size = 0.5) +
@@ -120,7 +120,7 @@ confint_tidy(m_corrupt, conf.level = 0.95) %>%
 ```
 
 ### Life Expectancy
-```{r}
+```{r linear-model-life-expectancy, message=FALSE, warning=FALSE}
 life_expectancy <- worldhappiness %>% 
   filter(!is.na(Healthy_life_expectancy)) %>% 
   select(Country, Score, Healthy_life_expectancy, year)
@@ -143,3 +143,33 @@ ggplot(data = life_expectancy, aes(x = Healthy_life_expectancy, y = Score)) +
        y = "Overall Happiness Score")
 ```
 
+### Social Support
+
+```{r linear-model-soc-support, warning=FALSE, message=FALSE}
+#Sample stat.
+socsup <- worldhappiness %>% 
+  filter(!is.na(Social_support)) %>% 
+  select(Country, Score, Social_support, year)
+
+socsup %>% 
+  summarize(r_overall = cor(Score, Social_support))
+
+#Create tidy for linear model
+m_score_socsup <- lm(Score ~ Social_support, data = worldhappiness)
+
+m_score_socsup %>%
+  tidy() %>%
+  select(term, estimate)
+
+#Conf. Interval
+broom::confint_tidy(m_score_socsup, conf.level = 0.95)
+
+#Model
+ggplot(data = socialsupport, mapping = aes(x = Social_support, y = Score)) + 
+  geom_point(size = 0.3) + 
+  geom_smooth(method = "lm", color = "red", size = 0.6) + 
+  labs(title = "Linear model for rltn. b/w Social Support and Happiness Score", 
+       subtitle = "For the world in 2018-2019", x = "Social Support Score",
+       y = "Happiness Score") + 
+  theme_minimal()
+```
