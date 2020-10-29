@@ -1,0 +1,63 @@
+---
+title: "Methodology"
+author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
+date: "10/28/2020"
+output: html_document
+---
+```{r setup-packages, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(plyr) #package for join command
+library(maps) #package for world map
+```
+
+```{r load-datasets, message = FALSE, warning = FALSE}
+report_2018 <- read_csv("data/2018.csv") %>% 
+  mutate(year = "2018",
+         `Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
+report_2019 <- read_csv("data/2019.csv") %>% 
+  mutate(year = "2019")
+country_region <- read_csv("data/2020.csv") %>% 
+  mutate(year = "2020") %>% 
+  select(`Country name`, `Regional indicator`)
+
+names(country_region) <- c("Country", "Region")
+names(report_2018) <- str_replace_all(names(report_2018), c(" " = "_"))
+names(report_2019) <- str_replace_all(names(report_2018), c(" " = "_"))
+
+worldhappiness <- full_join(report_2018, report_2019) 
+worldhappiness <- worldhappiness %>% 
+  rename(c("Country_or_region" = "Country")) %>% 
+  left_join(country_region)
+
+glimpse(worldhappiness)
+```
+
+```{r add-region}
+worldhappiness %>% 
+  filter(is.na(Region))
+
+worldhappiness <- worldhappiness %>% 
+  mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region)) %>%
+  mutate(Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Trinidad & Tobago", "Latin America and Caribbean", Region)) %>% 
+  mutate(Region = ifelse(Country == "Belize", "Latin America and Caribbean", Region)) %>% 
+  mutate(Region = ifelse(Country == "Northern Cyprus", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Hong Kong", "East Asia", Region)) %>% 
+  mutate(Region = ifelse(Country == "Bhutan", "South Asia", Region)) %>% 
+  mutate(Region = ifelse(Country == "Somalia", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Sudan", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Angola", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Syria", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
+```
+
+###Methodology
+```{r summary-statistics}
+worldhappiness %>% 
+  summarize(mean = mean(Score), median = median(Score), first_quartile = quantile(Score, 0.25),
+            third_quartile = quantile(Score, 0.75), sd = var(Score))
+
+ggplot(worldhappiness, mapping = aes(x = Score, fill = Region)) +
+  geom_boxplot()
+```
+
