@@ -4,6 +4,13 @@ author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
 date: "10/27/2020"
 output: html_document
 ---
+### Introduction
+CodeStone chose to explore the data from the World Happiness Reports of 2018 and 2019, published by the Sustainable Development Network. According to the WHR, this data is derived from the Gallup World Poll, a systematic telephone survey and in person interviews in over 160 countries whose surveys claim to represent 80%+ of the population (2014). The calls are made via random phone number generation and randomly selecting households (GWP, 2014). 
+
+Generally, we want to explore the following question: which factors correlate most strongly to happiness across the globe? We chose to focus on four variables as well as the overall happiness score in our analysis. The four variables chosen were GDP per capita, Perceptions of Corruption, Social Support, and Life Expectancy, selected because we thought they represented economic, political, social, and medical aspects of well being respectively. Furthermore, the data set included 312 cases, each representing the data for a particular country. Guided by our general research question, we also examined the variation of their distribution by region, and which of these factors have the strongest correlations.
+
+Considering the concerning state of our world in 2020, including the worsening effects of climate change, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within each nation and across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust (Helliwell et al., 2012). Eight years later, these paradoxes persit, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
+
 
 ```{r setup-packages, message = FALSE, warning = FALSE}
 library(tidyverse)
@@ -85,7 +92,7 @@ glance(m_happy)$r.squared
 
 ### Perceptions of Corruption 
 
-```{r linear-model-corrupt, message = FALSE, error = FALSE}
+```{r linear-model-corrupt, message = FALSEXS}
 # Linear model for relationship between perceptions of corruption score and overall happiness score
 m_corrupt <- lm(Score ~ `Perceptions of corruption`, data = worldhappiness)
 
