@@ -1,0 +1,105 @@
+---
+title: "Social Support"
+author: "Edgar Salas"
+date: "10/27/2020"
+output: html_document
+---
+
+### Load Packages and Datasets 
+
+```{r packages, message=FALSE, warning=FALSE}
+#Via project-proposal.Rmd
+
+library(tidyverse)
+library(plyr) #package for join command
+library(broom)
+```
+
+```{r datasets, message=FALSE, warning=FALSE}
+#Via project-proposal.Rmd
+
+report_2018 <- read_csv("data/2018.csv") %>% 
+  mutate(year = "2018",
+         `Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
+report_2019 <- read_csv("data/2019.csv") %>% 
+  mutate(year = "2019")
+
+names(report_2018) <- str_replace_all(names(report_2018), c(" " = "_"))
+names(report_2019) <- str_replace_all(names(report_2018), c(" " = "_"))
+
+worldhappiness <- full_join(report_2018, report_2019)
+
+#Note: Are we still using 2 datasets? Further, I see diff. in years.
+
+```
+
+### Filter for the Soc. Support Variable
+
+```{r filter}
+socialsupport <- worldhappiness %>%
+  filter(!is.na("Social_support"))
+
+glimpse(socialsupport)
+```
+
+### Find Sample Stats (2018, 2019)
+
+```{r sample_stats}
+#Correlation both Years
+socialsupport %>%
+  summarize(cor(Score, Social_support))
+
+#Corr. 2018
+socialsupport %>%
+  filter(year == "2018") %>%
+  summarize(cor(Score, Social_support))
+
+#Corr. 2019
+socialsupport %>%
+  filter(year == "2019") %>%
+  summarize(cor(Score, Social_support))
+```
+
+Correlation values across both years is 0.76. Specifically, for 2018, there 
+exists a correlation of 0.74. For 2019, this is 0.77. These generally high 
+values suggest a correlation between the variables which we can further explore.
+
+### Linear Model and Conf. Interval and Test
+
+```{r line, warning=FALSE, message=FALSE}
+#Create tidy for linear model
+m_score_socsup <- lm(Score ~ Social_support, data = socialsupport)
+tidy(m_score_socsup)
+
+#Conf. Interval
+broom::confint_tidy(m_score_socsup, conf.level = 0.95)
+
+#Model
+ggplot(data = socialsupport, mapping = aes(x = Social_support, y = Score)) + 
+  geom_point(size = 0.3) + 
+  geom_smooth(method = "lm", color = "red", size = 0.6) + 
+  labs(title = "Linear model for rltn. b/w Social Support and Happiness Score", 
+       subtitle = "For the world in 2018-2019", x = "Social Support Score",
+       y = "Happiness Score") + 
+  theme_minimal()
+```
+
+$H_o: \beta = 0$. There is no relationship between Social Support and Happiness
+Score.
+
+$H_o: \beta \neq 0$. There is a relationship between Social Support and 
+Happiness Score.
+
+We will perform a test at the $\alpha = 0.05$ level.
+
+From our test, we find the equation SCORE = 1.97 + (2.82) SOC_SUP.
+
+From our CI for slope, we find it to be (2.55, 3.09). If we were to repeat this
+CI many times, 95% of the CIs would contain the true slope for social support
+and happiness score.
+
+Lastly, since our p values is markedly less than 0.05, we reject the null hypothesis. 
+We have found statistically significant evidence to state that there is a 
+relationship between social support and happiness score.
+
+
