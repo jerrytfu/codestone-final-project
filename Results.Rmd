@@ -1,8 +1,10 @@
 ---
-title: "Results"
+title: "Final Project"
 author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
 date: "10/27/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 ### Introduction
 CodeStone chose to explore the data from the World Happiness Reports of 2018 and 2019, published by the Sustainable Development Network. According to the WHR, this data is derived from the Gallup World Poll, a systematic telephone survey and in person interviews in over 160 countries whose surveys claim to represent 80%+ of the population (2014). The calls are made via random phone number generation and randomly selecting households (GWP, 2014). 
@@ -80,8 +82,8 @@ chisq.test(worldhappiness$Score, worldhappiness$Region)
 ### Multiple regression for all considered factors 
 
 ```{r multiple-reg-for-all}
-m_happy <- lm(Score ~ `Perceptions of corruption` + `Social support` +
-                `GDP per capita` + `Healthy life expectancy`, data = worldhappiness)
+m_happy <- lm(Score ~ Perceptions_of_corruption + Social_support +
+                GDP_per_capita + Healthy_life_expectancy, data = worldhappiness)
 
 m_happy %>% 
   tidy() %>%
@@ -92,9 +94,9 @@ glance(m_happy)$r.squared
 
 ### Perceptions of Corruption 
 
-```{r linear-model-corrupt, message = FALSEXS}
-# Linear model for relationship between perceptions of corruption score and overall happiness score
-m_corrupt <- lm(Score ~ `Perceptions of corruption`, data = worldhappiness)
+```{r linear-model-corrupt, message = FALSE}
+# Linear model for relationship between perceptions of corruption score and # overall happiness score
+m_corrupt <- lm(Score ~ Perceptions_of_corruption, data = worldhappiness)
 
 m_corrupt %>%
   tidy() %>%
@@ -102,7 +104,7 @@ m_corrupt %>%
 
 
 # Visualization of linear model
-ggplot(data = corruption, aes(x = `Perceptions of corruption`,
+ggplot(data = worldhappiness, aes(x = Perceptions_of_corruption,
                               y = Score)) + 
   geom_point(size = 0.8) + 
   geom_smooth(method = lm, color = "blue", size = 0.5) +
