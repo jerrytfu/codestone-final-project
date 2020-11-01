@@ -121,10 +121,10 @@ glance(m_happy)$r.squared
 <<<<<<< HEAD
 ```{r linear-model-corrupt, message = FALSE}
 # Linear model for relationship between perceptions of corruption score and # overall happiness score
-=======
+```
+
 ```{r linear-model-corrupt, message = FALSE, warning = FALSE}
 # Linear model for relationship between perceptions of corruption score and overall happiness score
->>>>>>> 53415d8ce2813c3205a40fdc5f99905986503676
 m_corrupt <- lm(Score ~ Perceptions_of_corruption, data = worldhappiness)
 
 m_corrupt %>%
@@ -133,11 +133,10 @@ m_corrupt %>%
 
 
 # Visualization of linear model
-<<<<<<< HEAD
-ggplot(data = worldhappiness, aes(x = Perceptions_of_corruption,
-=======
+
+#ggplot(data = worldhappiness, aes(x = Perceptions_of_corruption,
+
 ggplot(data = m_corrupt, aes(x = Perceptions_of_corruption,
->>>>>>> 53415d8ce2813c3205a40fdc5f99905986503676
                               y = Score)) + 
   geom_point(size = 0.8) + 
   geom_smooth(method = lm, color = "blue", size = 0.5) +
