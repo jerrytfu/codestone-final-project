@@ -18,6 +18,7 @@ Considering the concerning state of our world in 2020, including the worsening e
 library(tidyverse)
 library(plyr) #package for join command
 library(maps) #package for world map
+library(broom)
 ```
 
 ```{r load-datasets, message = FALSE, warning = FALSE}
@@ -117,8 +118,13 @@ glance(m_happy)$r.squared
 
 ### Perceptions of Corruption 
 
+<<<<<<< HEAD
 ```{r linear-model-corrupt, message = FALSE}
 # Linear model for relationship between perceptions of corruption score and # overall happiness score
+=======
+```{r linear-model-corrupt, message = FALSE, warning = FALSE}
+# Linear model for relationship between perceptions of corruption score and overall happiness score
+>>>>>>> 53415d8ce2813c3205a40fdc5f99905986503676
 m_corrupt <- lm(Score ~ Perceptions_of_corruption, data = worldhappiness)
 
 m_corrupt %>%
@@ -127,7 +133,11 @@ m_corrupt %>%
 
 
 # Visualization of linear model
+<<<<<<< HEAD
 ggplot(data = worldhappiness, aes(x = Perceptions_of_corruption,
+=======
+ggplot(data = m_corrupt, aes(x = Perceptions_of_corruption,
+>>>>>>> 53415d8ce2813c3205a40fdc5f99905986503676
                               y = Score)) + 
   geom_point(size = 0.8) + 
   geom_smooth(method = lm, color = "blue", size = 0.5) +
@@ -138,11 +148,12 @@ and overall happiness score",
        y = "Overall happiness score")
 
 #Confidence interval for linear model above 
-broom::confint_tidy(m_corrupt, conf.level = 0.95) %>% 
+confint_tidy(m_corrupt, conf.level = 0.95) %>% 
   slice(2)
 
 ```
 
+<<<<<<< HEAD
 
 ### Discussion
 
@@ -156,3 +167,59 @@ Considering that the data was collected through Gallup, a group well-respected f
 We were unable to reject the null hypothesis for our chi-square test for happiness and region, but there is a very likely possibility that we made a type II error. In order to perform a Pearson’s chi-squared test, four conditions have to be satisfied: simple random sample, sample size, expected cell count, and independence. Based on the description of the dataset, the survey was random, enough people were sampled, and the people sampled were independent of each other. Due to the nature of our data, however, expected counts for several cells were smaller than 5, and so the test loses a lot of accuracy. A solution to this would be to add the field simulate.p.value = TRUE to the chi-squared test, which uses the Monte Carlo method to obtain a p-value from random sampling.
 
 Going forward, we would hope to study what specific factors lead to happiness among a general population within a country. In order to do this, we would need more variables that affect people’s lives: e.g. level of infrastructure, quality of healthcare, quality of education, safety. We might also seek to answer questions like the following: do the factors that predict happiness vary by region? Why are some regions happier than others? What factor is the most important for happiness across the board?
+=======
+### Life Expectancy
+```{r linear-model-life-expectancy, message=FALSE, warning=FALSE}
+life_expectancy <- worldhappiness %>% 
+  filter(!is.na(Healthy_life_expectancy)) %>% 
+  select(Country, Score, Healthy_life_expectancy, year)
+
+life_expectancy %>% 
+  summarize(r_overall = cor(Score, Healthy_life_expectancy))
+
+m_life <- lm(Score ~ Healthy_life_expectancy, data = worldhappiness)
+
+m_life %>%
+  tidy() %>%
+  select(term, estimate) 
+
+ggplot(data = life_expectancy, aes(x = Healthy_life_expectancy, y = Score)) + 
+  geom_point(size = 0.8) + 
+  geom_smooth(method = lm, color = "blue", size = 0.5) +
+  theme_bw() +
+  labs(title = "Linear model for relationship between healthy life expectancy and overall happiness score",
+       subtitle = "Strong, positive correlation", x = "Healthy Life Expectancy Score",
+       y = "Overall Happiness Score")
+```
+
+### Social Support
+
+```{r linear-model-soc-support, warning=FALSE, message=FALSE}
+#Sample stat.
+socsup <- worldhappiness %>% 
+  filter(!is.na(Social_support)) %>% 
+  select(Country, Score, Social_support, year)
+
+socsup %>% 
+  summarize(r_overall = cor(Score, Social_support))
+
+#Create tidy for linear model
+m_score_socsup <- lm(Score ~ Social_support, data = worldhappiness)
+
+m_score_socsup %>%
+  tidy() %>%
+  select(term, estimate)
+
+#Conf. Interval
+broom::confint_tidy(m_score_socsup, conf.level = 0.95)
+
+#Model
+ggplot(data = socialsupport, mapping = aes(x = Social_support, y = Score)) + 
+  geom_point(size = 0.3) + 
+  geom_smooth(method = "lm", color = "red", size = 0.6) + 
+  labs(title = "Linear model for rltn. b/w Social Support and Happiness Score", 
+       subtitle = "For the world in 2018-2019", x = "Social Support Score",
+       y = "Happiness Score") + 
+  theme_minimal()
+```
+>>>>>>> 53415d8ce2813c3205a40fdc5f99905986503676
