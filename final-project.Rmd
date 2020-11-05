@@ -54,32 +54,130 @@ worldhappiness <- worldhappiness %>%
 
 worldhappiness <- worldhappiness %>% 
   mutate(is_nordic = case_when(
-    Country == "Denmark" ~ "nordic",
-    Country == "Iceland" ~ "nordic",
-    Country == "Finland" ~ "nordic",
-    Country == "Sweden" ~ "nordic",
-    Country == "Norway" ~ "nordic",
-    TRUE ~ "other"
+    Country == "Denmark" ~ "1",
+    Country == "Iceland" ~ "1",
+    Country == "Finland" ~ "1",
+    Country == "Sweden" ~ "1",
+    Country == "Norway" ~ "1",
+    TRUE ~ "0"
   ))
 view(worldhappiness)
 ```
 
-## R Markdown
+### Freedom to make life choices 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+$H_0$: $\mu_N$ <= $\mu_O$ 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+$H_A$: $\mu_N$ > $\mu_O$ 
 
-```{r cars}
-summary(cars)
+Null hypothesis: The mean freedom to make life choices score in Nordic countries is less than or equal to the mean freedom to make life choices score in the rest of the world. 
+
+Alternative hypothesis: The mean freedom to make life choices score in Nordic countries is greater than the mean freedom to make life choices score in the rest of the world. 
+
+```{r freedom-life-choices}
+set.seed(1)
+
+nordic <- worldhappiness %>% 
+  filter(is_nordic == 1)
+other <- worldhappiness %>% 
+  filter(is_nordic == 0)
+
+n_sims <- 2020
+boot_sims <- numeric(n_sims)
+for(i in 1:n_sims){
+  m_nordic <- nordic %>%
+    slice(sample(1:nrow(nordic), replace = T)) %>%
+    summarize(mean_nordic = mean(Freedom_to_make_life_choices)) %>%
+    pull()
+  m_other <- other %>%
+    slice(sample(1:nrow(other), replace = T)) %>%
+    summarize(mean_other = mean(Freedom_to_make_life_choices)) %>%
+    pull()
+  boot_sims[i] <- m_nordic - m_other
+}
+boot_mean <- mean(boot_sims)
+boot_sims <- tibble(diffs = boot_sims)
+
+
+offset <- boot_sims %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_sims %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  labs(title = "Simulated null distribution of difference in mean 
+freedom to make life choices scores",
+       subtitle = "Conclusion once p-value works",
+       x = "Simulated difference in means", y = "Count") #+ 
+  #geom_vline(xintercept = boot_mean, color = "red", lwd = 2)
+
+obs_diff <- boot_sims %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
+  
 ```
 
-## Including Plots
+### Generosity
 
-You can also embed plots, for example:
+$H_0$: $\mu_N$ <= $\mu_O$ 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+$H_A$: $\mu_N$ > $\mu_O$ 
+
+Null hypothesis: The mean generosity score in Nordic countries is less than or equal to the mean generosity score in the rest of the world. 
+
+Alternative hypothesis: The mean freedom to make life choices score in Nordic countries is greater than the mean generosity score in the rest of the world. 
+
+```{r generosity}
+set.seed(2)
+
+n_sims <- 2020
+boot_sims <- numeric(n_sims)
+for(i in 1:n_sims){
+  m_nordic <- nordic %>%
+    slice(sample(1:nrow(nordic), replace = T)) %>%
+    summarize(mean_nordic = mean(Generosity)) %>%
+    pull()
+  m_other <- other %>%
+    slice(sample(1:nrow(other), replace = T)) %>%
+    summarize(mean_other = mean(Generosity)) %>%
+    pull()
+  boot_sims[i] <- m_nordic - m_other
+}
+boot_mean <- mean(boot_sims)
+boot_sims <- tibble(diffs = boot_sims)
+
+
+offset <- boot_sims %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_sims %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  labs(title = "Simulated null distribution of difference in mean 
+generosity scores",
+       subtitle = "Conclusion once p-value works",
+       x = "Simulated difference in means", y = "Count") #+ 
+  #geom_vline(xintercept = boot_mean, color = "red", lwd = 2)
+
+obs_diff <- boot_sims %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
