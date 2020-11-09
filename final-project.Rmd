@@ -61,6 +61,7 @@ worldhappiness <- worldhappiness %>%
     Country == "Norway" ~ "1",
     TRUE ~ "0"
   ))
+
 view(worldhappiness)
 ```
 
@@ -77,23 +78,25 @@ Alternative hypothesis: The mean freedom to make life choices score in Nordic co
 ```{r freedom-life-choices}
 set.seed(1)
 
-nordic <- worldhappiness %>% 
-  filter(is_nordic == 1)
+#nordic <- worldhappiness %>% 
+  #filter(is_nordic == 1)
+nw_europe <- worldhappiness %>% 
+  filter(Region == `Western Europe`)
 other <- worldhappiness %>% 
   filter(is_nordic == 0)
 
 n_sims <- 2020
 boot_sims <- numeric(n_sims)
 for(i in 1:n_sims){
-  m_nordic <- nordic %>%
-    slice(sample(1:nrow(nordic), replace = T)) %>%
-    summarize(mean_nordic = mean(Freedom_to_make_life_choices)) %>%
+  m_nordic <- nw_europe %>%
+    slice(sample(1:nrow(nw_europe), replace = T)) %>%
+    summarize(mean_nw_europe = mean(Freedom_to_make_life_choices)) %>%
     pull()
   m_other <- other %>%
     slice(sample(1:nrow(other), replace = T)) %>%
     summarize(mean_other = mean(Freedom_to_make_life_choices)) %>%
     pull()
-  boot_sims[i] <- m_nordic - m_other
+  boot_sims[i] <- m_nw_europe - m_other
 }
 boot_mean <- mean(boot_sims)
 boot_sims <- tibble(diffs = boot_sims)
