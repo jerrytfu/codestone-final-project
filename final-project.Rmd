@@ -206,7 +206,7 @@ null_dist %>%
 
 ### Life Expectancy
 
-```{r}
+```{r LE}
 worldhappiness %>% 
   filter(Region == "Western Europe") %>%
   summarize(WE_life_expectancy = mean(Healthy_life_expectancy))
