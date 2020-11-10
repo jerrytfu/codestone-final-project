@@ -2,7 +2,9 @@
 title: "Final"
 author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
 date: "11/4/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 --- 
 
 ```{r setup-packages, message = FALSE, warning = FALSE}
@@ -64,6 +66,23 @@ worldhappiness <- worldhappiness %>%
 
 view(worldhappiness)
 ```
+### Difference in Happiness
+```{r DiH}
+worldhappiness %>% 
+  filter(is_nordic == "1") %>%
+  summarize(Nordic_happiness = mean(Score))
+
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_happiness = mean(Score))
+
+worldhappiness %>%
+  filter(Region != "Western Europe") %>%
+  summarize(RestofW_life_expectancy = mean(Score))
+  
+```
+
+
 
 ### Freedom to make life choices 
 
@@ -184,3 +203,71 @@ null_dist %>%
   summarize(p_val = mean(extreme))
 
 ```
+
+### Life Expectancy
+
+```{r}
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_life_expectancy = mean(Healthy_life_expectancy))
+
+worldhappiness %>%
+  filter(Region != "Western Europe") %>%
+  summarize(RestofW_life_expectancy = mean(Healthy_life_expectancy))
+
+WE <- worldhappiness %>% 
+  filter(Region == "Western Europe")
+Other <- worldhappiness %>% 
+  filter(Region != "Western Europe")
+
+n_sims <- 2000
+boot_diffs <- numeric(n_sims)
+
+for(i in 1:n_sims){
+
+  indices_WE <- sample(1:nrow(WE), replace = T)
+  indices_O <- sample(1:nrow(Other), replace = T)
+  
+  temp_WE <- WE %>% 
+    slice(indices_WE) %>% 
+    summarize(mean_life_expectancy = mean(Healthy_life_expectancy)) %>% 
+    select(mean_life_expectancy) %>% 
+    pull()
+  temp_O <- Other %>% 
+    slice(indices_O) %>% 
+    summarize(mean_life_expectancy = mean(Healthy_life_expectancy)) %>% 
+    select(mean_life_expectancy) %>% 
+    pull()
+
+  boot_diffs[i] <- temp_WE - temp_O
+} 
+boot_diffs <- tibble(diffs = boot_diffs)
+
+offset <- boot_diffs %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_diffs %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+obs_diff <- boot_diffs %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2)
+  labs(title = "Simulated Null Distribution of Difference in 
+  Mean Life Expectancy", 
+       x = "Difference in Mean",
+       y = "Count")
+
+  
+
+```
+
