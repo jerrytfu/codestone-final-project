@@ -33,7 +33,6 @@ year2019 <- corruption %>%
 year2018 <- corruption %>% 
   filter(year == "2018")
 
-view(worldhappiness)
 ```
 
 ### Correlational stats
