@@ -1,0 +1,186 @@
+---
+title: "Final"
+author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
+date: "11/4/2020"
+output: html_document
+--- 
+
+```{r setup-packages, message = FALSE, warning = FALSE}
+library(tidyverse)
+library(plyr) #package for join command
+library(maps) #package for world map
+library(broom)
+```
+
+```{r load-datasets, message = FALSE, warning = FALSE}
+report_2018 <- read_csv("data/2018.csv") %>% 
+  mutate(year = "2018",
+         `Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
+report_2019 <- read_csv("data/2019.csv") %>% 
+  mutate(year = "2019")
+country_region <- read_csv("data/2020.csv") %>% 
+  mutate(year = "2020") %>% 
+  select(`Country name`, `Regional indicator`)
+
+names(country_region) <- c("Country", "Region")
+names(report_2018) <- str_replace_all(names(report_2018), c(" " = "_"))
+names(report_2019) <- str_replace_all(names(report_2018), c(" " = "_"))
+
+worldhappiness <- full_join(report_2018, report_2019) 
+worldhappiness <- worldhappiness %>% 
+  rename(c("Country_or_region" = "Country")) %>% 
+  left_join(country_region)
+
+glimpse(worldhappiness)
+```
+
+```{r add-region}
+worldhappiness %>% 
+  filter(is.na(Region))
+
+worldhappiness <- worldhappiness %>% 
+  mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region)) %>%
+  mutate(Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Trinidad & Tobago", "Latin America and Caribbean", Region)) %>% 
+  mutate(Region = ifelse(Country == "Belize", "Latin America and Caribbean", Region)) %>% 
+  mutate(Region = ifelse(Country == "Northern Cyprus", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Hong Kong", "East Asia", Region)) %>% 
+  mutate(Region = ifelse(Country == "Bhutan", "South Asia", Region)) %>% 
+  mutate(Region = ifelse(Country == "Somalia", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Sudan", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Angola", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "Syria", "Middle East and North Africa", Region)) %>% 
+  mutate(Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
+
+worldhappiness <- worldhappiness %>% 
+  mutate(is_nordic = case_when(
+    Country == "Denmark" ~ "1",
+    Country == "Iceland" ~ "1",
+    Country == "Finland" ~ "1",
+    Country == "Sweden" ~ "1",
+    Country == "Norway" ~ "1",
+    TRUE ~ "0"
+  ))
+
+view(worldhappiness)
+```
+
+### Freedom to make life choices 
+
+$H_0$: $\mu_N$ <= $\mu_O$ 
+
+$H_A$: $\mu_N$ > $\mu_O$ 
+
+Null hypothesis: The mean freedom to make life choices score in Nordic countries is less than or equal to the mean freedom to make life choices score in the rest of the world. 
+
+Alternative hypothesis: The mean freedom to make life choices score in Nordic countries is greater than the mean freedom to make life choices score in the rest of the world. 
+
+```{r freedom-life-choices}
+set.seed(1)
+
+#nordic <- worldhappiness %>% 
+  #filter(is_nordic == 1)
+nw_europe <- worldhappiness %>% 
+  filter(Region == `Western Europe`)
+other <- worldhappiness %>% 
+  filter(is_nordic == 0)
+
+n_sims <- 2020
+boot_sims <- numeric(n_sims)
+for(i in 1:n_sims){
+  m_nordic <- nw_europe %>%
+    slice(sample(1:nrow(nw_europe), replace = T)) %>%
+    summarize(mean_nw_europe = mean(Freedom_to_make_life_choices)) %>%
+    pull()
+  m_other <- other %>%
+    slice(sample(1:nrow(other), replace = T)) %>%
+    summarize(mean_other = mean(Freedom_to_make_life_choices)) %>%
+    pull()
+  boot_sims[i] <- m_nw_europe - m_other
+}
+boot_mean <- mean(boot_sims)
+boot_sims <- tibble(diffs = boot_sims)
+
+
+offset <- boot_sims %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_sims %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  labs(title = "Simulated null distribution of difference in mean 
+freedom to make life choices scores",
+       subtitle = "Conclusion once p-value works",
+       x = "Simulated difference in means", y = "Count") #+ 
+  #geom_vline(xintercept = boot_mean, color = "red", lwd = 2)
+
+obs_diff <- boot_sims %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
+  
+```
+
+### Generosity
+
+$H_0$: $\mu_N$ <= $\mu_O$ 
+
+$H_A$: $\mu_N$ > $\mu_O$ 
+
+Null hypothesis: The mean generosity score in Nordic countries is less than or equal to the mean generosity score in the rest of the world. 
+
+Alternative hypothesis: The mean freedom to make life choices score in Nordic countries is greater than the mean generosity score in the rest of the world. 
+
+```{r generosity}
+set.seed(2)
+
+n_sims <- 2020
+boot_sims <- numeric(n_sims)
+for(i in 1:n_sims){
+  m_nordic <- nordic %>%
+    slice(sample(1:nrow(nordic), replace = T)) %>%
+    summarize(mean_nordic = mean(Generosity)) %>%
+    pull()
+  m_other <- other %>%
+    slice(sample(1:nrow(other), replace = T)) %>%
+    summarize(mean_other = mean(Generosity)) %>%
+    pull()
+  boot_sims[i] <- m_nordic - m_other
+}
+boot_mean <- mean(boot_sims)
+boot_sims <- tibble(diffs = boot_sims)
+
+
+offset <- boot_sims %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_sims %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  labs(title = "Simulated null distribution of difference in mean 
+generosity scores",
+       subtitle = "Conclusion once p-value works",
+       x = "Simulated difference in means", y = "Count") #+ 
+  #geom_vline(xintercept = boot_mean, color = "red", lwd = 2)
+
+obs_diff <- boot_sims %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
+```
