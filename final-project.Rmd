@@ -66,6 +66,31 @@ worldhappiness <- worldhappiness %>%
 
 view(worldhappiness)
 ```
+
+### Is there a relationship between region of the world and happiness score?
+
+```{r world-map, fig.width = 10, fig.height = 5}
+world_map <- map_data("world") %>% 
+  mutate(region = ifelse(region == "USA", "United States", region)) %>% 
+  mutate(region = ifelse(region == "Democratic Republic of the Congo", "Congo (Kinshasa)", region))
+  
+happiness_score_map <- left_join(worldhappiness, world_map, by = c("Country" = "region"))
+ggplot(happiness_score_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Score), color = "white") +
+  labs(title = "World Map", subtitle = "colored by Happiness Score", x = "", y = "") +
+  scale_fill_viridis_c(option = "D")
+```
+https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
+
+$H_0$: There is no association between region of the world and happiness score.
+$H_a$: There is an association between region of the world and happiness score.
+```{r chi-sq-region-score}
+chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
+```
+With a simulated p-value of 0.0004998 which is less than our $\alpha = 0.05$, we have
+sufficient evidence to reject the null hypothesis in favor of the alternative hypothesis
+and conclude that there is an association between region of the world and happiness score.
+
 ### Difference in Happiness
 ```{r DiH}
 worldhappiness %>% 
@@ -82,7 +107,131 @@ worldhappiness %>%
   
 ```
 
+### GDP per capita
 
+```{r gdp}
+set.seed(714)
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_GDP = mean(GDP_per_capita))
+
+worldhappiness %>%
+  filter(Region == "North America and ANZ") %>%
+  summarize(NorthA_GDP = mean(GDP_per_capita))
+
+WE <- worldhappiness %>% 
+  filter(Region == "Western Europe")
+NorthAmerica <- worldhappiness %>% 
+  filter(Region == "North America and ANZ")
+
+n_sims <- 2000
+boot_diffs <- numeric(n_sims)
+
+for(i in 1:n_sims){
+  indices_WE <- sample(1:nrow(WE), replace = T)
+  indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
+  
+  temp_WE <- WE %>% 
+    slice(indices_WE) %>% 
+    summarize(GDP_per_capita = mean(GDP_per_capita)) %>% 
+    select(GDP_per_capita) %>% 
+    pull()
+  temp_NA <- NorthAmerica %>% 
+    slice(indices_O) %>% 
+    summarize(GDP_per_capita = mean(GDP_per_capita)) %>% 
+    select(GDP_per_capita) %>% 
+    pull()
+
+  boot_diffs[i] <- temp_WE - temp_O
+} 
+boot_diffs <- tibble(diffs = boot_diffs)
+
+offset <- boot_diffs %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_diffs %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+obs_diff <- boot_diffs %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
+  labs(title = "Simulated Null Distribution of Difference in GDP per capita", 
+       x = "Difference in Mean",
+       y = "Count")
+```
+
+### Social Support
+
+```{r social-support}
+set.seed(949)
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_GDP = mean(Social_support))
+
+worldhappiness %>%
+  filter(Region == "North America and ANZ") %>%
+  summarize(NorthA_GDP = mean(Social_support))
+
+WE <- worldhappiness %>% 
+  filter(Region == "Western Europe")
+Other <- worldhappiness %>% 
+  filter(Region == "North America and ANZ")
+
+n_sims <- 2000
+boot_diffs <- numeric(n_sims)
+
+for(i in 1:n_sims){
+  indices_WE <- sample(1:nrow(WE), replace = T)
+  indices_O <- sample(1:nrow(Other), replace = T)
+  
+  temp_WE <- WE %>% 
+    slice(indices_WE) %>% 
+    summarize(Social_support = mean(Social_support)) %>% 
+    select(Social_support) %>% 
+    pull()
+  temp_O <- Other %>% 
+    slice(indices_O) %>% 
+    summarize(Social_support = mean(Social_support)) %>% 
+    select(Social_support) %>% 
+    pull()
+
+  boot_diffs[i] <- temp_WE - temp_O
+} 
+boot_diffs <- tibble(diffs = boot_diffs)
+
+offset <- boot_diffs %>% 
+  summarize(offset = 0 - mean(diffs)) %>% 
+  pull()
+null_dist <- boot_diffs %>% 
+  mutate(centered_diffs = diffs + offset) %>% 
+  select(centered_diffs)
+
+obs_diff <- boot_diffs %>% 
+  summarize(obs_diff = mean(diffs)) %>% 
+  pull()
+null_dist %>% 
+  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+  summarize(p_val = mean(extreme))
+
+ggplot(null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.005,
+                 fill = "skyblue", 
+                 color = "darkblue") +
+  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
+  labs(title = "Simulated Null Distribution of Difference in Social Support", 
+       x = "Difference in Mean",
+       y = "Count")
+```
 
 ### Freedom to make life choices 
 
@@ -266,8 +415,5 @@ ggplot(null_dist, aes(x = centered_diffs)) +
   Mean Life Expectancy", 
        x = "Difference in Mean",
        y = "Count")
-
-  
-
 ```
 
