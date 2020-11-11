@@ -241,7 +241,7 @@ Alternative hypothesis: The mean freedom to make life choices score in Nordic co
 ```{r freedom-life-choices}
 set.seed(1)
 
-n_sims <- 1000
+n_sims <- 2020
 boot_sims <- numeric(n_sims)
 for(i in 1:n_sims){
   m_nw <- WE %>%
@@ -271,7 +271,7 @@ ggplot(null_dist, aes(x = centered_diffs)) +
   geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated null distribution of difference in mean 
 freedom to make life choices scores",
-       subtitle = "Conclusion once p-value works",
+       subtitle = "Statistically significant evidence to reject the null hypothesis",
        x = "Simulated difference in means", y = "Count")
 
 obs_diff <- boot_sims %>% 
@@ -300,15 +300,15 @@ set.seed(2)
 n_sims <- 2020
 boot_sims <- numeric(n_sims)
 for(i in 1:n_sims){
-  m_nordic <- nordic %>%
-    slice(sample(1:nrow(nordic), replace = T)) %>%
-    summarize(mean_nordic = mean(Generosity)) %>%
+  m_WE <- nordic %>%
+    slice(sample(1:nrow(WE), replace = T)) %>%
+    summarize(mean_WE = mean(Generosity)) %>%
     pull()
-  m_other <- other %>%
-    slice(sample(1:nrow(other), replace = T)) %>%
-    summarize(mean_other = mean(Generosity)) %>%
+  m_NA <- other %>%
+    slice(sample(1:nrow(NorthAmerica), replace = T)) %>%
+    summarize(mean_NA = mean(Generosity)) %>%
     pull()
-  boot_sims[i] <- m_nordic - m_other
+  boot_sims[i] <- m_WE - m_NA
 }
 boot_mean <- mean(boot_sims)
 boot_sims <- tibble(diffs = boot_sims)
@@ -327,9 +327,9 @@ ggplot(null_dist, aes(x = centered_diffs)) +
                  color = "darkblue") +
   labs(title = "Simulated null distribution of difference in mean 
 generosity scores",
-       subtitle = "Conclusion once p-value works",
-       x = "Simulated difference in means", y = "Count") #+ 
-  #geom_vline(xintercept = boot_mean, color = "red", lwd = 2)
+       subtitle = "Failure to reject the null hypothesis",
+       x = "Simulated difference in means", y = "Count") +
+  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) 
 
 obs_diff <- boot_sims %>% 
   summarize(obs_diff = mean(diffs)) %>% 
