@@ -124,7 +124,7 @@ WE <- worldhappiness %>%
 NorthAmerica <- worldhappiness %>% 
   filter(Region == "North America and ANZ")
 
-n_sims <- 2000
+n_sims <- 100
 boot_diffs <- numeric(n_sims)
 
 for(i in 1:n_sims){
@@ -137,12 +137,12 @@ for(i in 1:n_sims){
     select(GDP_per_capita) %>% 
     pull()
   temp_NA <- NorthAmerica %>% 
-    slice(indices_O) %>% 
+    slice(indices_NA) %>% 
     summarize(GDP_per_capita = mean(GDP_per_capita)) %>% 
     select(GDP_per_capita) %>% 
     pull()
 
-  boot_diffs[i] <- temp_WE - temp_O
+  boot_diffs[i] <- temp_WE - temp_NA
 } 
 boot_diffs <- tibble(diffs = boot_diffs)
 
@@ -182,30 +182,25 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NorthA_GDP = mean(Social_support))
 
-WE <- worldhappiness %>% 
-  filter(Region == "Western Europe")
-Other <- worldhappiness %>% 
-  filter(Region == "North America and ANZ")
-
-n_sims <- 2000
+n_sims <- 100
 boot_diffs <- numeric(n_sims)
 
 for(i in 1:n_sims){
   indices_WE <- sample(1:nrow(WE), replace = T)
-  indices_O <- sample(1:nrow(Other), replace = T)
+  indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
   
   temp_WE <- WE %>% 
     slice(indices_WE) %>% 
     summarize(Social_support = mean(Social_support)) %>% 
     select(Social_support) %>% 
     pull()
-  temp_O <- Other %>% 
-    slice(indices_O) %>% 
+  temp_NA <- NorthAmerica %>% 
+    slice(indices_NA) %>% 
     summarize(Social_support = mean(Social_support)) %>% 
     select(Social_support) %>% 
     pull()
 
-  boot_diffs[i] <- temp_WE - temp_O
+  boot_diffs[i] <- temp_WE - temp_NA
 } 
 boot_diffs <- tibble(diffs = boot_diffs)
 
@@ -246,29 +241,21 @@ Alternative hypothesis: The mean freedom to make life choices score in Nordic co
 ```{r freedom-life-choices}
 set.seed(1)
 
-#nordic <- worldhappiness %>% 
-  #filter(is_nordic == 1)
-nw_europe <- worldhappiness %>% 
-  filter(Region == `Western Europe`)
-other <- worldhappiness %>% 
-  filter(is_nordic == 0)
-
-n_sims <- 2020
+n_sims <- 1000
 boot_sims <- numeric(n_sims)
 for(i in 1:n_sims){
-  m_nordic <- nw_europe %>%
-    slice(sample(1:nrow(nw_europe), replace = T)) %>%
+  m_nw <- WE %>%
+    slice(sample(1:nrow(WE), replace = T)) %>%
     summarize(mean_nw_europe = mean(Freedom_to_make_life_choices)) %>%
     pull()
-  m_other <- other %>%
-    slice(sample(1:nrow(other), replace = T)) %>%
+  m_NA <- NorthAmerica %>%
+    slice(sample(1:nrow(NorthAmerica), replace = T)) %>%
     summarize(mean_other = mean(Freedom_to_make_life_choices)) %>%
     pull()
-  boot_sims[i] <- m_nw_europe - m_other
+  boot_sims[i] <- m_nw - m_NA
 }
 boot_mean <- mean(boot_sims)
 boot_sims <- tibble(diffs = boot_sims)
-
 
 offset <- boot_sims %>% 
   summarize(offset = 0 - mean(diffs)) %>% 
@@ -278,14 +265,14 @@ null_dist <- boot_sims %>%
   select(centered_diffs)
 
 ggplot(null_dist, aes(x = centered_diffs)) +
-  geom_histogram(binwidth = 0.005,
+  geom_histogram(binwidth = 0.01,
                  fill = "skyblue", 
                  color = "darkblue") +
+  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated null distribution of difference in mean 
 freedom to make life choices scores",
        subtitle = "Conclusion once p-value works",
-       x = "Simulated difference in means", y = "Count") #+ 
-  #geom_vline(xintercept = boot_mean, color = "red", lwd = 2)
+       x = "Simulated difference in means", y = "Count")
 
 obs_diff <- boot_sims %>% 
   summarize(obs_diff = mean(diffs)) %>% 
@@ -361,34 +348,29 @@ worldhappiness %>%
   summarize(WE_life_expectancy = mean(Healthy_life_expectancy))
 
 worldhappiness %>%
-  filter(Region != "Western Europe") %>%
+  filter(Region == "Western Europe") %>%
   summarize(RestofW_life_expectancy = mean(Healthy_life_expectancy))
 
-WE <- worldhappiness %>% 
-  filter(Region == "Western Europe")
-Other <- worldhappiness %>% 
-  filter(Region != "Western Europe")
-
-n_sims <- 2000
+n_sims <- 100
 boot_diffs <- numeric(n_sims)
 
 for(i in 1:n_sims){
 
   indices_WE <- sample(1:nrow(WE), replace = T)
-  indices_O <- sample(1:nrow(Other), replace = T)
+  indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
   
   temp_WE <- WE %>% 
     slice(indices_WE) %>% 
     summarize(mean_life_expectancy = mean(Healthy_life_expectancy)) %>% 
     select(mean_life_expectancy) %>% 
     pull()
-  temp_O <- Other %>% 
-    slice(indices_O) %>% 
+  temp_NA <- NorthAmerica %>% 
+    slice(indices_NA) %>% 
     summarize(mean_life_expectancy = mean(Healthy_life_expectancy)) %>% 
     select(mean_life_expectancy) %>% 
     pull()
 
-  boot_diffs[i] <- temp_WE - temp_O
+  boot_diffs[i] <- temp_WE - temp_NA
 } 
 boot_diffs <- tibble(diffs = boot_diffs)
 
@@ -407,10 +389,10 @@ null_dist %>%
   summarize(p_val = mean(extreme))
 
 ggplot(null_dist, aes(x = centered_diffs)) +
-  geom_histogram(binwidth = 0.005,
+  geom_histogram(binwidth = 0.01,
                  fill = "skyblue", 
                  color = "darkblue") +
-  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2)
+  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated Null Distribution of Difference in 
   Mean Life Expectancy", 
        x = "Difference in Mean",
