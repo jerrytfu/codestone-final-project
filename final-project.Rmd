@@ -196,9 +196,9 @@ $H_0$: $\mu_N$ <= $\mu_O$
 
 $H_A$: $\mu_N$ > $\mu_O$ 
 
-Null hypothesis: The mean freedom to make life choices score in Nordic countries is less than or equal to the mean freedom to make life choices score in the rest of the world. 
+Null hypothesis: The mean freedom to make life choices score in Western Europe is less than or equal to the mean freedom to make life choices score in North America, Australia, and New Zealand.
 
-Alternative hypothesis: The mean freedom to make life choices score in Nordic countries is greater than the mean freedom to make life choices score in the rest of the world. 
+Alternative hypothesis: The mean freedom to make life choices score in Western Europe is greater than the mean freedom to make life choices score in North America, Australia, and New Zealand.
 
 ```{r freedom-life-choices}
 set.seed(1)
@@ -214,8 +214,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated null distribution of difference in mean 
 freedom to make life choices scores",
-       subtitle = "Statistically significant evidence to reject the null hypothesis",
-       x = "Simulated difference in means", y = "Count")
+       x = "Difference in mean", y = "Count")
 ```
 
 ### Generosity
@@ -224,9 +223,9 @@ $H_0$: $\mu_N$ <= $\mu_O$
 
 $H_A$: $\mu_N$ > $\mu_O$ 
 
-Null hypothesis: The mean generosity score in Nordic countries is less than or equal to the mean generosity score in the rest of the world. 
+Null hypothesis: The mean generosity score in Western Europe is less than or equal to the mean generosity score in North America, Australia, and New Zealand.
 
-Alternative hypothesis: The mean freedom to make life choices score in Nordic countries is greater than the mean generosity score in the rest of the world. 
+Alternative hypothesis: The mean freedom to make life choices score in Western Europe is greater than the mean generosity score in North America, Australia, and New Zealand.
 
 ```{r generosity}
 set.seed(2)
@@ -242,8 +241,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated null distribution of difference in mean 
 freedom to make life choices scores",
-       subtitle = "Statistically significant evidence to reject the null hypothesis",
-       x = "Simulated difference in means", y = "Count")
+       x = "Difference in mean", y = "Count")
 ```
 
 ### Life Expectancy
