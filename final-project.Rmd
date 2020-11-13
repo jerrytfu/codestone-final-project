@@ -33,38 +33,28 @@ worldhappiness <- worldhappiness %>%
   rename(c("Country_or_region" = "Country")) %>% 
   left_join(country_region)
 
+tidy_frame <- data.frame(matrix(unlist(worldhappiness), nrow = length(worldhappiness), byrow = T))
+
 glimpse(worldhappiness)
 ```
 
 ```{r add-region}
-worldhappiness %>% 
-  filter(is.na(Region))
-
+#add regions to rows with missing Region column
 worldhappiness <- worldhappiness %>% 
-  mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region)) %>%
-  mutate(Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region)) %>% 
-  mutate(Region = ifelse(Country == "Trinidad & Tobago", "Latin America and Caribbean", Region)) %>% 
-  mutate(Region = ifelse(Country == "Belize", "Latin America and Caribbean", Region)) %>% 
-  mutate(Region = ifelse(Country == "Northern Cyprus", "Middle East and North Africa", Region)) %>% 
-  mutate(Region = ifelse(Country == "Hong Kong", "East Asia", Region)) %>% 
-  mutate(Region = ifelse(Country == "Bhutan", "South Asia", Region)) %>% 
-  mutate(Region = ifelse(Country == "Somalia", "Middle East and North Africa", Region)) %>% 
-  mutate(Region = ifelse(Country == "Sudan", "Middle East and North Africa", Region)) %>% 
-  mutate(Region = ifelse(Country == "Angola", "Middle East and North Africa", Region)) %>% 
-  mutate(Region = ifelse(Country == "Syria", "Middle East and North Africa", Region)) %>% 
-  mutate(Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
+  mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region),
+         Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region),
+         Region = ifelse(Country == "Trinidad & Tobago", "Latin America and Caribbean", Region),
+         Region = ifelse(Country == "Belize", "Latin America and Caribbean", Region),
+         Region = ifelse(Country == "Northern Cyprus", "Middle East and North Africa", Region),
+         Region = ifelse(Country == "Hong Kong", "East Asia", Region),
+         Region = ifelse(Country == "Bhutan", "South Asia", Region),
+         Region = ifelse(Country == "Somalia", "Middle East and North Africa", Region),
+         Region = ifelse(Country == "Sudan", "Middle East and North Africa", Region),
+         Region = ifelse(Country == "Angola", "Middle East and North Africa", Region),
+         Region = ifelse(Country == "Syria", "Middle East and North Africa", Region),
+         Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
 
-worldhappiness <- worldhappiness %>% 
-  mutate(is_nordic = case_when(
-    Country == "Denmark" ~ "1",
-    Country == "Iceland" ~ "1",
-    Country == "Finland" ~ "1",
-    Country == "Sweden" ~ "1",
-    Country == "Norway" ~ "1",
-    TRUE ~ "0"
-  ))
-
-view(worldhappiness)
+worldhappiness
 ```
 
 ### Is there a relationship between region of the world and happiness score?
@@ -91,20 +81,62 @@ With a simulated p-value of 0.0004998 which is less than our $\alpha = 0.05$, we
 sufficient evidence to reject the null hypothesis in favor of the alternative hypothesis
 and conclude that there is an association between region of the world and happiness score.
 
-### Difference in Happiness
-```{r DiH}
-worldhappiness %>% 
-  filter(is_nordic == "1") %>%
-  summarize(Nordic_happiness = mean(Score))
+### Summary Statistics
+```{r summary-statistics}
+WE <- worldhappiness %>% 
+  filter(Region == "Western Europe")
+NorthAmerica <- worldhappiness %>% 
+  filter(Region == "North America and ANZ")
 
 worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_happiness = mean(Score))
+  filter(Region == "Western Europe") %>% 
+  summarize(WE_mean_happiness = mean(Score), median_score = median(Score), SD = sd(Score))
 
 worldhappiness %>%
-  filter(Region != "Western Europe") %>%
-  summarize(RestofW_life_expectancy = mean(Score))
+  filter(Region == "North America and ANZ") %>%
+  summarize(NA_mean_happiness = mean(Score), median_score = median(Score), SD = sd(Score))
+```
+
+
+###Create Function
+```{r create-function}
+diff_means <- function(variable, n_sims){
+  boot_diffs <- numeric(n_sims)
+
+  for(i in 1:n_sims){
+    indices_WE <- sample(1:nrow(WE), replace = T)
+    indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
   
+    temp_WE <- WE %>% 
+      slice(indices_WE) %>% 
+      summarize(mean_WE = mean(get(variable))) %>% 
+      select(mean_WE) %>% 
+      pull()
+    temp_NA <- NorthAmerica %>% 
+      slice(indices_NA) %>% 
+      summarize(mean_NA = mean(get(variable))) %>% 
+      select(mean_NA) %>% 
+      pull()
+
+    boot_diffs[i] <- temp_WE - temp_NA
+  } 
+  boot_diffs <- tibble(diffs = boot_diffs)
+
+  offset <- boot_diffs %>% 
+    summarize(offset = 0 - mean(diffs)) %>% 
+    pull()
+  null_dist <- boot_diffs %>% 
+    mutate(centered_diffs = diffs + offset) %>% 
+    select(centered_diffs)
+  obs_diff <- boot_diffs %>% 
+    summarize(obs_diff = mean(diffs)) %>% 
+    pull()
+  p_val <- null_dist %>% 
+    mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+    summarize(p_val = mean(extreme)) 
+
+  return(list(p_val = p_val, null_dist = null_dist, obs_diff = obs_diff))
+}
 ```
 
 ### GDP per capita
@@ -119,52 +151,14 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NorthA_GDP = mean(GDP_per_capita))
 
-WE <- worldhappiness %>% 
-  filter(Region == "Western Europe")
-NorthAmerica <- worldhappiness %>% 
-  filter(Region == "North America and ANZ")
+bootstrap <- diff_means(variable = "GDP_per_capita", 1000)
 
-n_sims <- 100
-boot_diffs <- numeric(n_sims)
-
-for(i in 1:n_sims){
-  indices_WE <- sample(1:nrow(WE), replace = T)
-  indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
-  
-  temp_WE <- WE %>% 
-    slice(indices_WE) %>% 
-    summarize(GDP_per_capita = mean(GDP_per_capita)) %>% 
-    select(GDP_per_capita) %>% 
-    pull()
-  temp_NA <- NorthAmerica %>% 
-    slice(indices_NA) %>% 
-    summarize(GDP_per_capita = mean(GDP_per_capita)) %>% 
-    select(GDP_per_capita) %>% 
-    pull()
-
-  boot_diffs[i] <- temp_WE - temp_NA
-} 
-boot_diffs <- tibble(diffs = boot_diffs)
-
-offset <- boot_diffs %>% 
-  summarize(offset = 0 - mean(diffs)) %>% 
-  pull()
-null_dist <- boot_diffs %>% 
-  mutate(centered_diffs = diffs + offset) %>% 
-  select(centered_diffs)
-
-obs_diff <- boot_diffs %>% 
-  summarize(obs_diff = mean(diffs)) %>% 
-  pull()
-null_dist %>% 
-  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
-  summarize(p_val = mean(extreme))
-
-ggplot(null_dist, aes(x = centered_diffs)) +
+bootstrap$p_val
+ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_histogram(binwidth = 0.005,
                  fill = "skyblue", 
                  color = "darkblue") +
-  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
+  geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated Null Distribution of Difference in GDP per capita", 
        x = "Difference in Mean",
        y = "Count")
@@ -182,47 +176,15 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NorthA_GDP = mean(Social_support))
 
-n_sims <- 100
-boot_diffs <- numeric(n_sims)
+bootstrap <- diff_means(variable = "Social_support", 1000)
 
-for(i in 1:n_sims){
-  indices_WE <- sample(1:nrow(WE), replace = T)
-  indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
-  
-  temp_WE <- WE %>% 
-    slice(indices_WE) %>% 
-    summarize(Social_support = mean(Social_support)) %>% 
-    select(Social_support) %>% 
-    pull()
-  temp_NA <- NorthAmerica %>% 
-    slice(indices_NA) %>% 
-    summarize(Social_support = mean(Social_support)) %>% 
-    select(Social_support) %>% 
-    pull()
+bootstrap$p_val
 
-  boot_diffs[i] <- temp_WE - temp_NA
-} 
-boot_diffs <- tibble(diffs = boot_diffs)
-
-offset <- boot_diffs %>% 
-  summarize(offset = 0 - mean(diffs)) %>% 
-  pull()
-null_dist <- boot_diffs %>% 
-  mutate(centered_diffs = diffs + offset) %>% 
-  select(centered_diffs)
-
-obs_diff <- boot_diffs %>% 
-  summarize(obs_diff = mean(diffs)) %>% 
-  pull()
-null_dist %>% 
-  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
-  summarize(p_val = mean(extreme))
-
-ggplot(null_dist, aes(x = centered_diffs)) +
+ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_histogram(binwidth = 0.005,
                  fill = "skyblue", 
                  color = "darkblue") +
-  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
+  geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated Null Distribution of Difference in Social Support", 
        x = "Difference in Mean",
        y = "Count")
@@ -241,47 +203,19 @@ Alternative hypothesis: The mean freedom to make life choices score in Nordic co
 ```{r freedom-life-choices}
 set.seed(1)
 
-n_sims <- 2020
-boot_sims <- numeric(n_sims)
-for(i in 1:n_sims){
-  m_nw <- WE %>%
-    slice(sample(1:nrow(WE), replace = T)) %>%
-    summarize(mean_nw_europe = mean(Freedom_to_make_life_choices)) %>%
-    pull()
-  m_NA <- NorthAmerica %>%
-    slice(sample(1:nrow(NorthAmerica), replace = T)) %>%
-    summarize(mean_other = mean(Freedom_to_make_life_choices)) %>%
-    pull()
-  boot_sims[i] <- m_nw - m_NA
-}
-boot_mean <- mean(boot_sims)
-boot_sims <- tibble(diffs = boot_sims)
+bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 1000)
 
-offset <- boot_sims %>% 
-  summarize(offset = 0 - mean(diffs)) %>% 
-  pull()
-null_dist <- boot_sims %>% 
-  mutate(centered_diffs = diffs + offset) %>% 
-  select(centered_diffs)
+bootstrap$p_val
 
-ggplot(null_dist, aes(x = centered_diffs)) +
+ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_histogram(binwidth = 0.01,
                  fill = "skyblue", 
                  color = "darkblue") +
-  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
+  geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated null distribution of difference in mean 
 freedom to make life choices scores",
        subtitle = "Statistically significant evidence to reject the null hypothesis",
        x = "Simulated difference in means", y = "Count")
-
-obs_diff <- boot_sims %>% 
-  summarize(obs_diff = mean(diffs)) %>% 
-  pull()
-null_dist %>% 
-  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
-  summarize(p_val = mean(extreme))
-
-  
 ```
 
 ### Generosity
@@ -297,47 +231,19 @@ Alternative hypothesis: The mean freedom to make life choices score in Nordic co
 ```{r generosity}
 set.seed(2)
 
-n_sims <- 2020
-boot_sims <- numeric(n_sims)
-for(i in 1:n_sims){
-  m_WE <- nordic %>%
-    slice(sample(1:nrow(WE), replace = T)) %>%
-    summarize(mean_WE = mean(Generosity)) %>%
-    pull()
-  m_NA <- other %>%
-    slice(sample(1:nrow(NorthAmerica), replace = T)) %>%
-    summarize(mean_NA = mean(Generosity)) %>%
-    pull()
-  boot_sims[i] <- m_WE - m_NA
-}
-boot_mean <- mean(boot_sims)
-boot_sims <- tibble(diffs = boot_sims)
+bootstrap <- diff_means(variable = "Generosity", 1000)
 
+bootstrap$p_val
 
-offset <- boot_sims %>% 
-  summarize(offset = 0 - mean(diffs)) %>% 
-  pull()
-null_dist <- boot_sims %>% 
-  mutate(centered_diffs = diffs + offset) %>% 
-  select(centered_diffs)
-
-ggplot(null_dist, aes(x = centered_diffs)) +
-  geom_histogram(binwidth = 0.005,
+ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.01,
                  fill = "skyblue", 
                  color = "darkblue") +
+  geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated null distribution of difference in mean 
-generosity scores",
-       subtitle = "Failure to reject the null hypothesis",
-       x = "Simulated difference in means", y = "Count") +
-  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) 
-
-obs_diff <- boot_sims %>% 
-  summarize(obs_diff = mean(diffs)) %>% 
-  pull()
-null_dist %>% 
-  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
-  summarize(p_val = mean(extreme))
-
+freedom to make life choices scores",
+       subtitle = "Statistically significant evidence to reject the null hypothesis",
+       x = "Simulated difference in means", y = "Count")
 ```
 
 ### Life Expectancy
@@ -351,48 +257,15 @@ worldhappiness %>%
   filter(Region == "Western Europe") %>%
   summarize(RestofW_life_expectancy = mean(Healthy_life_expectancy))
 
-n_sims <- 100
-boot_diffs <- numeric(n_sims)
+bootstrap <- diff_means(variable = "Healthy_life_expectancy", 1000)
 
-for(i in 1:n_sims){
+bootstrap$p_val
 
-  indices_WE <- sample(1:nrow(WE), replace = T)
-  indices_NA <- sample(1:nrow(NorthAmerica), replace = T)
-  
-  temp_WE <- WE %>% 
-    slice(indices_WE) %>% 
-    summarize(mean_life_expectancy = mean(Healthy_life_expectancy)) %>% 
-    select(mean_life_expectancy) %>% 
-    pull()
-  temp_NA <- NorthAmerica %>% 
-    slice(indices_NA) %>% 
-    summarize(mean_life_expectancy = mean(Healthy_life_expectancy)) %>% 
-    select(mean_life_expectancy) %>% 
-    pull()
-
-  boot_diffs[i] <- temp_WE - temp_NA
-} 
-boot_diffs <- tibble(diffs = boot_diffs)
-
-offset <- boot_diffs %>% 
-  summarize(offset = 0 - mean(diffs)) %>% 
-  pull()
-null_dist <- boot_diffs %>% 
-  mutate(centered_diffs = diffs + offset) %>% 
-  select(centered_diffs)
-
-obs_diff <- boot_diffs %>% 
-  summarize(obs_diff = mean(diffs)) %>% 
-  pull()
-null_dist %>% 
-  mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
-  summarize(p_val = mean(extreme))
-
-ggplot(null_dist, aes(x = centered_diffs)) +
+ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_histogram(binwidth = 0.01,
                  fill = "skyblue", 
                  color = "darkblue") +
-  geom_vline(xintercept = obs_diff, color = "tomato", lwd = 2) +
+  geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
   labs(title = "Simulated Null Distribution of Difference in 
   Mean Life Expectancy", 
        x = "Difference in Mean",
