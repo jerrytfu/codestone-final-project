@@ -1,5 +1,5 @@
 ---
-title: "Final"
+title: "Final Project: An Evaluation of the World Happiness Report"
 author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
 date: "11/4/2020"
 output:
@@ -7,14 +7,14 @@ output:
   html_document: default
 --- 
 
-```{r setup-packages, message = FALSE, warning = FALSE}
+```{r setup-packages, message = FALSE, warning = FALSE, echo = FALSE}
 library(tidyverse)
 library(plyr) #package for join command
 library(maps) #package for world map
 library(broom)
 ```
 
-```{r load-datasets, message = FALSE, warning = FALSE}
+```{r load-datasets, message = FALSE, warning = FALSE, echo = FALSE}
 report_2018 <- read_csv("data/2018.csv") %>% 
   mutate(year = "2018",
          `Perceptions of corruption` = as.numeric(`Perceptions of corruption`))
@@ -38,7 +38,7 @@ tidy_frame <- data.frame(matrix(unlist(worldhappiness), nrow = length(worldhappi
 glimpse(worldhappiness)
 ```
 
-```{r add-region}
+```{r add-region, echo = FALSE}
 #add regions to rows with missing Region column
 worldhappiness <- worldhappiness %>% 
   mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region),
@@ -59,7 +59,7 @@ view(worldhappiness)
 
 ### Is there a relationship between region of the world and happiness score?
 
-```{r world-map, fig.width = 10, fig.height = 5}
+```{r world-map, fig.width = 10, fig.height = 5, echo = FALSE}
 world_map <- map_data("world") %>% 
   mutate(region = ifelse(region == "USA", "United States", region)) %>% 
   mutate(region = ifelse(region == "Democratic Republic of the Congo", "Congo (Kinshasa)", region))
@@ -74,7 +74,7 @@ https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
 
 $H_0$: There is no association between region of the world and happiness score.
 $H_a$: There is an association between region of the world and happiness score.
-```{r chi-sq-region-score}
+```{r chi-sq-region-score, echo = FALSE}
 chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
 ```
 With a simulated p-value of 0.0004998 which is less than our $\alpha = 0.05$, we have
@@ -82,7 +82,7 @@ sufficient evidence to reject the null hypothesis in favor of the alternative hy
 and conclude that there is an association between region of the world and happiness score.
 
 ### Summary Statistics
-```{r summary-statistics}
+```{r summary-statistics, echo = FALSE}
 WE <- worldhappiness %>% 
   filter(Region == "Western Europe")
 NorthAmerica <- worldhappiness %>% 
@@ -98,8 +98,7 @@ worldhappiness %>%
 ```
 
 
-###Create Function
-```{r create-function}
+```{r create-function, echo = FALSE}
 diff_means <- function(variable, n_sims){
   boot_diffs <- numeric(n_sims)
 
@@ -139,9 +138,17 @@ diff_means <- function(variable, n_sims){
 }
 ```
 
+Each of the simulation-based hypothesis tests used to evaluate the variables contributing to overall happiness score will be evaluated at the $\alpha =$ 0.05 level.
+
+Generally, our null hypothesis states that the mean score for a particular variable in Western Europe is less than or equal to the mean score for that same variable in North America, Australia, and New Zealand. Our alternative hypothesis therefore is that the mean score for a particular variable in Western Europe is greater than that of the mean score for that variable in North America, Australia, and New Zealand. 
+
+$H_0$: $\mu_{WE}$ <= $\mu_{NA, ANZ}$ 
+
+$H_A$: $\mu_{WE}$ > $\mu_{NA, ANZ}$ 
+
 ### GDP per capita
 
-```{r gdp}
+```{r gdp, echo = FALSE}
 set.seed(714)
 worldhappiness %>% 
   filter(Region == "Western Europe") %>%
@@ -149,7 +156,7 @@ worldhappiness %>%
 
 worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
-  summarize(NorthA_GDP = mean(GDP_per_capita))
+  summarize(NA_ANZ_GDP = mean(GDP_per_capita))
 
 bootstrap <- diff_means(variable = "GDP_per_capita", 1000)
 
@@ -166,15 +173,15 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 
 ### Social Support
 
-```{r social-support}
+```{r social-support, echo = FALSE}
 set.seed(949)
 worldhappiness %>% 
   filter(Region == "Western Europe") %>%
-  summarize(WE_GDP = mean(Social_support))
+  summarize(WE_Soc_Support = mean(Social_support))
 
 worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
-  summarize(NorthA_GDP = mean(Social_support))
+  summarize(NA_ANZ_Soc_Support = mean(Social_support))
 
 bootstrap <- diff_means(variable = "Social_support", 1000)
 
@@ -192,23 +199,23 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 
 ### Freedom to make life choices 
 
-$H_0$: $\mu_N$ <= $\mu_O$ 
-
-$H_A$: $\mu_N$ > $\mu_O$ 
-
-Null hypothesis: The mean freedom to make life choices score in Western Europe is less than or equal to the mean freedom to make life choices score in North America, Australia, and New Zealand.
-
-Alternative hypothesis: The mean freedom to make life choices score in Western Europe is greater than the mean freedom to make life choices score in North America, Australia, and New Zealand.
-
-```{r freedom-life-choices}
+```{r freedom-life-choices, echo = FALSE}
 set.seed(1)
+
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_Life_Choices = mean(Freedom_to_make_life_choices))
+
+worldhappiness %>%
+  filter(Region == "North America and ANZ") %>%
+  summarize(NA_ANZ_Life_Choices = mean(Freedom_to_make_life_choices))
 
 bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 1000)
 
 bootstrap$p_val
 
 ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
-  geom_histogram(binwidth = 0.01,
+  geom_histogram(binwidth = 0.005,
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
@@ -219,23 +226,23 @@ freedom to make life choices scores",
 
 ### Generosity
 
-$H_0$: $\mu_N$ <= $\mu_O$ 
-
-$H_A$: $\mu_N$ > $\mu_O$ 
-
-Null hypothesis: The mean generosity score in Western Europe is less than or equal to the mean generosity score in North America, Australia, and New Zealand.
-
-Alternative hypothesis: The mean freedom to make life choices score in Western Europe is greater than the mean generosity score in North America, Australia, and New Zealand.
-
-```{r generosity}
+```{r generosity, echo = FALSE}
 set.seed(2)
+
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_Gen = mean(Generosity))
+
+worldhappiness %>%
+  filter(Region == "North America and ANZ") %>%
+  summarize(NA_ANZ_Gen = mean(Generosity))
 
 bootstrap <- diff_means(variable = "Generosity", 1000)
 
 bootstrap$p_val
 
 ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
-  geom_histogram(binwidth = 0.01,
+  geom_histogram(binwidth = 0.005,
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
@@ -246,7 +253,7 @@ freedom to make life choices scores",
 
 ### Life Expectancy
 
-```{r LE}
+```{r LE, echo = FALSE}
 worldhappiness %>% 
   filter(Region == "Western Europe") %>%
   summarize(WE_life_expectancy = mean(Healthy_life_expectancy))
@@ -260,7 +267,7 @@ bootstrap <- diff_means(variable = "Healthy_life_expectancy", 1000)
 bootstrap$p_val
 
 ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
-  geom_histogram(binwidth = 0.01,
+  geom_histogram(binwidth = 0.005,
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
