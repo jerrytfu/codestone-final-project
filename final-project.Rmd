@@ -54,7 +54,7 @@ worldhappiness <- worldhappiness %>%
          Region = ifelse(Country == "Syria", "Middle East and North Africa", Region),
          Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
 
-worldhappiness
+view(worldhappiness)
 ```
 
 ### Is there a relationship between region of the world and happiness score?
