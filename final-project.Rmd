@@ -67,6 +67,7 @@ worldhappiness <- worldhappiness %>%
 view(worldhappiness)
 ```
 
+
 ### Is there a relationship between region of the world and happiness score?
 
 ```{r world-map, fig.width = 10, fig.height = 5, echo = FALSE}
@@ -148,6 +149,7 @@ diff_means <- function(variable, n_sims){
 }
 ```
 
+
 Each of the simulation-based hypothesis tests used to evaluate the variables contributing to overall happiness score will be evaluated at the $\alpha =$ 0.05 level.
 
 Generally, our null hypothesis states that the mean score for a particular variable in Western Europe is less than or equal to the mean score for that same variable in North America, Australia, and New Zealand. Our alternative hypothesis therefore is that the mean score for a particular variable in Western Europe is greater than that of the mean score for that variable in North America, Australia, and New Zealand. 
@@ -176,8 +178,8 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated Null Distribution of Difference in GDP per capita", 
-       x = "Difference in Mean",
+  labs(title = "Simulated null distribution of difference in GDP per capita", 
+       x = "Difference in mean",
        y = "Count")
 ```
 
@@ -202,8 +204,8 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated Null Distribution of Difference in Social Support", 
-       x = "Difference in Mean",
+  labs(title = "Simulated null distribution of difference in social support", 
+       x = "Difference in mean",
        y = "Count")
 ```
 
@@ -229,10 +231,11 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in mean 
-freedom to make life choices scores",
+  labs(title = "Simulated null distribution of difference in freedom to make life choices",
        x = "Difference in mean", y = "Count")
 ```
+The calculated p-value of 0.024 is significant at the $\alpha =$ 0.05 level, indicating that we can reject the null hypothesis. Therefore, there is statistically significant evidence to suggest that the mean freedom to make life choices score in Western Europe is greater than that of North America, Australia, and New Zealand. 
+
 
 ### Generosity
 
@@ -256,10 +259,11 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in mean 
-freedom to make life choices scores",
+  labs(title = "Simulated null distribution of difference in generosity",
        x = "Difference in mean", y = "Count")
 ```
+The calculated p-value of 0 is significant at the $\alpha =$ 0.05 level, indicating that we can reject the null hypothesis. Therefore, there is statistically significant evidence to suggest that the mean generosity score in Western Europe is greater than that of North America, Australia, and New Zealand. 
+
 
 ### Life Expectancy
 
@@ -281,9 +285,8 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated Null Distribution of Difference in 
-  Mean Life Expectancy", 
-       x = "Difference in Mean",
+  labs(title = "Simulated null distribution of difference in life expectancy", 
+       x = "Difference in mean",
        y = "Count")
 ```
 
