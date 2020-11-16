@@ -290,3 +290,45 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
        y = "Count")
 ```
 
+### Perceptions of Corruption
+
+$H_o$: The mean perceptions of corruption in North America is less than or 
+equal to that of Western Europe.
+
+$H_a$: The mean perceptions of corruption in North America is greater than 
+that of Western Europe. 
+
+$\alpha = 0.05$
+
+From this test, we find a P-value of 0.0535. Since our p-value is not less than 
+our significance level of $\alpha = 0.05$, we fail to reject the null 
+hypothesis. There is not enough evidence to suggest that the mean perceptions
+of corruption in North America is greater than that of Western Europe.
+
+
+```{r poc}
+#Set seed
+set.seed(5318008)
+
+#Summary Stats
+worldhappiness %>% 
+  filter(Region == "Western Europe") %>%
+  summarize(WE_POC = mean(Perceptions_of_corruption))
+
+worldhappiness %>%
+  filter(Region == "North America and ANZ") %>%
+  summarize(NA_POC = mean(Perceptions_of_corruption))
+
+bootstrap <- diff_means(variable = "Perceptions_of_corruption", 2000)
+
+bootstrap$p_val
+
+#Graph
+ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
+  geom_histogram(binwidth = 0.01, fill = "skyblue", color = "darkblue") +
+  geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
+  labs(title = "Simulated Null Distribution of Difference in mean Perceptions of Corruption", 
+       x = "Difference in Mean",
+       y = "Count")
+
+```
