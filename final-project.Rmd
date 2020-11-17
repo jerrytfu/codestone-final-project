@@ -267,6 +267,17 @@ The calculated p-value of 0 is significant at the $\alpha =$ 0.05 level, indicat
 
 ### Life Expectancy
 
+$H_o$: The mean life expectancy in North America is less than or 
+equal to that of Western Europe.
+
+$H_a$: The mean life expectancy in North America is greater than 
+that of Western Europe. 
+
+The life expectancies for the two regions are quite similar and a p-value of
+0.264 means we fail to reject the null hypothesis. This supports the claim
+that there is no significant difference in life expectancy between the 
+two regions.
+
 ```{r LE, echo = FALSE}
 worldhappiness %>% 
   filter(Region == "Western Europe") %>%
