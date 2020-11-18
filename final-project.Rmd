@@ -169,7 +169,72 @@ diff_means <- function(variable, n_sims){
 }
 ```
 
+### Violin Plot Visualizations 
+```{r score-distributions, echo = FALSE}
+graph <- worldhappiness %>% 
+  filter(Region == "North America and ANZ" | Region == "Western Europe") %>% 
+  mutate(region = case_when(
+    Region == "North America and ANZ" ~ "North America",
+    Region == "Western Europe" ~ "Western Europe"
+  )) %>% 
+  group_by(region)
 
+ggplot(data = graph, aes(factor(region), Score)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "Overall happiness score",
+       title = "Distributions of overall happiness scores by region",
+       subtitle = "Red points denoting outliers") 
+
+ggplot(data = graph, aes(factor(region), GDP_per_capita)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "GDP per capita score",
+       title = "Distributions of GDP per capita scores by region",
+       subtitle = "Red points denoting outliers") 
+
+ggplot(data = graph, aes(factor(region), Social_support)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "Social support score",
+       title = "Distributions of social support scores by region",
+       subtitle = "Red points denoting outliers") 
+
+ggplot(data = graph, aes(factor(region), Healthy_life_expectancy)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "Healthy life expectancy score",
+       title = "Distributions of healthy life expectancy scores by region",
+       subtitle = "Red points denoting outliers") 
+
+ggplot(data = graph, aes(factor(region), Freedom_to_make_life_choices)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "Freedom to make life choices score",
+       title = "Distributions of freedom to make life choices scores by region",
+       subtitle = "Red points denoting outliers") 
+
+ggplot(data = graph, aes(factor(region), Generosity)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "Generosity score",
+       title = "Distributions of generosity scores by region",
+       subtitle = "Red points denoting outliers") 
+
+ggplot(data = graph, aes(factor(region), Perceptions_of_corruption)) +
+  geom_violin() +
+  geom_boxplot(width = 0.1, outlier.color = "red") +
+  labs(x = "Region",
+       y = "Perceptions of corruption score",
+       title = "Distributions of perceptions of corruption scores by region",
+       subtitle = "Red points denoting outliers") 
+```
 Each of the simulation-based hypothesis tests used to evaluate the variables contributing to overall happiness score will be evaluated at the $\alpha =$ 0.05 level.
 
 Generally, our null hypothesis states that the mean score for a particular variable in Western Europe is less than or equal to the mean score for that same variable in North America, Australia, and New Zealand. Our alternative hypothesis therefore is that the mean score for a particular variable in Western Europe is greater than that of the mean score for that variable in North America, Australia, and New Zealand. 
