@@ -19,18 +19,16 @@ GDP per capita: PPP (purchasing power parity) is a rate of conversion which atte
 
 Social Support: Social support is a self-reported measure of whether or not the respondent feels they can be helped. Specifically, respondents were asked, “If you were in trouble, do you have relatives or friends you can count on to help you whenever you need them, or not?” and responded with 0 or 1 (no or yes). The average for each respective country or region creates this value [3][4]. 
 
-Healthy Life Expectancy: Healthy life expectancy is a score calculated by comparing the number of years by which a country's life expectancy is greater than that of the lowest country. Life expectancy data was extrapolated from the WHOs health observation data up to 2016. Where missing, life expectancy data for certain countries was found using research and government tools [3][4]. 
+Life Expectancy: Life expectancy data was extrapolated from the WHOs health observation data up to 2016. Where missing, life expectancy data for certain countries was found using research and government tools [3][4]. 
 
 Perceptions of Corruption: Perception of Corruption is a self-reported measure of whether or not respondents feel there is active corruption within government and business. Specifically, respondents were asked, “Is corruption widespread throughout the government or not” and “Is corruption widespread within businesses or not?” and responded to both with 0 or 1 (no or yes). The average for each respective country or region creates this value [3][4]. Note: A higher value for this measure represents a lower perception of corruption.
 
-Freedom to Make Life Choices: 
 
+Generally, we want to explore the following question: what factors contribute to the differences in happiness scores between countries in North America versus Western Europe? Both regions are relatively comparable in terms of financial and political structures, but Western Europe contains the Nordic countries which consistently score highest in the World Happiness reports. With this, questions are raised as to what contributes to such happiness in this region of the world. 
 
-Generally, we want to explore the following question: what factors contribute to the differences in happiness scores between countries in North America and Australia versus Western Europe? Both regions are relatively comparable in terms of financial and political structures, but Western Europe contains the Nordic countries which consistently score highest in the World Happiness reports. With this, questions are raised as to what contributes to such happiness in this region of the world.
+The countries included in North America for the purposes of this study are the United States, Canada, and Mexico. We altered the original categorizations of regions, in which Mexico was not included but Australia and New Zealand were, to align with more common understandings of the region of North America. The countries included in Western Europe are much more extensive, and were not changed from the original categorization. 
 
 Considering the concerning state of our world in 2020, including the worsening effects of climate change, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within nations and between regions across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust [5]. Eight years later, these paradoxes persit, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
-
-
 
 
 ```{r setup-packages, message = FALSE, warning = FALSE, echo = FALSE}
