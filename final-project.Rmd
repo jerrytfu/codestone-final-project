@@ -59,10 +59,6 @@ worldhappiness <- full_join(report_2018, report_2019)
 worldhappiness <- worldhappiness %>% 
   rename(c("Country_or_region" = "Country")) %>% 
   left_join(country_region)
-
-tidy_frame <- data.frame(matrix(unlist(worldhappiness), nrow = length(worldhappiness), byrow = T))
-
-glimpse(worldhappiness)
 ```
 
 ```{r add-region, echo = FALSE}
@@ -80,8 +76,6 @@ worldhappiness <- worldhappiness %>%
          Region = ifelse(Country == "Angola", "Middle East and North Africa", Region),
          Region = ifelse(Country == "Syria", "Middle East and North Africa", Region),
          Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
-
-view(worldhappiness)
 ```
 
 ## METHODOLOGY
@@ -108,6 +102,7 @@ https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
 $H_0$: There is no association between region of the world and happiness score.
 $H_a$: There is an association between region of the world and happiness score.
 ```{r chi-sq-region-score, echo = FALSE}
+set.seed(714)
 chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
 ```
 
@@ -275,13 +270,6 @@ $H_A$: $\mu_{WE}$ > $\mu_{NA}$
 
 ```{r gdp, echo = FALSE}
 set.seed(714)
-worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_GDP = mean(GDP_per_capita))
-
-worldhappiness %>%
-  filter(Region == "North America and ANZ") %>%
-  summarize(NA_ANZ_GDP = mean(GDP_per_capita))
 
 bootstrap <- diff_means(variable = "GDP_per_capita", 100)
 
@@ -300,13 +288,6 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 
 ```{r social-support, echo = FALSE}
 set.seed(949)
-worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_Soc_Support = mean(Social_support))
-
-worldhappiness %>%
-  filter(Region == "North America and ANZ") %>%
-  summarize(NA_ANZ_Soc_Support = mean(Social_support))
 
 bootstrap <- diff_means(variable = "Social_support", 100)
 
@@ -327,14 +308,6 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 ```{r freedom-life-choices, echo = FALSE}
 set.seed(1)
 
-worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_Life_Choices = mean(Freedom_to_make_life_choices))
-
-worldhappiness %>%
-  filter(Region == "North America and ANZ") %>%
-  summarize(NA_ANZ_Life_Choices = mean(Freedom_to_make_life_choices))
-
 bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 100)
 
 bootstrap$p_val
@@ -354,14 +327,6 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 ```{r generosity, echo = FALSE}
 set.seed(2)
 
-worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_Gen = mean(Generosity))
-
-worldhappiness %>%
-  filter(Region == "North America and ANZ") %>%
-  summarize(NA_ANZ_Gen = mean(Generosity))
-
 bootstrap <- diff_means(variable = "Generosity", 100)
 
 bootstrap$p_val
@@ -379,13 +344,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 #### Life Expectancy
 
 ```{r LE, echo = FALSE}
-worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_life_expectancy = mean(Healthy_life_expectancy))
-
-worldhappiness %>%
-  filter(Region == "North America and ANZ") %>%
-  summarize(NA_life_expectancy = mean(Healthy_life_expectancy))
+set.seed(2020)
 
 bootstrap <- diff_means(variable = "Healthy_life_expectancy", 100)
 
