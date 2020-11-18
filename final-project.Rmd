@@ -271,7 +271,7 @@ $H_A$: $\mu_{WE}$ > $\mu_{NA}$
 ```{r gdp, echo = FALSE}
 set.seed(714)
 
-bootstrap <- diff_means(variable = "GDP_per_capita", 100)
+bootstrap <- diff_means(variable = "GDP_per_capita", 1000)
 
 bootstrap$p_val
 ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
@@ -289,7 +289,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 ```{r social-support, echo = FALSE}
 set.seed(949)
 
-bootstrap <- diff_means(variable = "Social_support", 100)
+bootstrap <- diff_means(variable = "Social_support", 1000)
 
 bootstrap$p_val
 
@@ -308,7 +308,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 ```{r freedom-life-choices, echo = FALSE}
 set.seed(1)
 
-bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 100)
+bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 1000)
 
 bootstrap$p_val
 
@@ -327,7 +327,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 ```{r generosity, echo = FALSE}
 set.seed(2)
 
-bootstrap <- diff_means(variable = "Generosity", 100)
+bootstrap <- diff_means(variable = "Generosity", 1000)
 
 bootstrap$p_val
 
@@ -346,7 +346,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 ```{r LE, echo = FALSE}
 set.seed(2020)
 
-bootstrap <- diff_means(variable = "Healthy_life_expectancy", 100)
+bootstrap <- diff_means(variable = "Healthy_life_expectancy", 1000)
 
 bootstrap$p_val
 
@@ -366,16 +366,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 #Set seed
 set.seed(5318008)
 
-#Summary Stats
-worldhappiness %>% 
-  filter(Region == "Western Europe") %>%
-  summarize(WE_POC = mean(Perceptions_of_corruption))
-
-worldhappiness %>%
-  filter(Region == "North America and ANZ") %>%
-  summarize(NA_POC = mean(Perceptions_of_corruption))
-
-bootstrap <- diff_means(variable = "Perceptions_of_corruption", 100)
+bootstrap <- diff_means(variable = "Perceptions_of_corruption", 1000)
 
 bootstrap$p_val
 
