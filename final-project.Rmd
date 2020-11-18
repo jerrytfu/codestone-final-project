@@ -88,7 +88,7 @@ $H_a$: There is an association between region of the world and happiness score.
 ```{r chi-sq-region-score, echo = FALSE}
 chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
 ```
-With a simulated p-value of 0.0004998 which is less than our $\alpha = 0.05$, we have
+With a simulated p-value of 0.1124 which is less than our $\alpha = 0.05$, we have
 sufficient evidence to reject the null hypothesis in favor of the alternative hypothesis
 and conclude that there is an association between region of the world and happiness score.
 
@@ -96,8 +96,10 @@ and conclude that there is an association between region of the world and happin
 ```{r summary-statistics, echo = FALSE}
 WE <- worldhappiness %>% 
   filter(Region == "Western Europe")
-NorthAmerica <- worldhappiness %>% 
-  filter(Region == "North America and ANZ")
+NorthAmerica <- worldhappiness %>%
+  mutate(Region = ifelse(Country == "Mexico", "North America and ANZ", Region)) %>% 
+  filter(Region == "North America and ANZ") %>% 
+  filter(Country != "Australia", Country != "New Zealand")
 
 worldhappiness %>% 
   filter(Region == "Western Europe") %>% 
@@ -138,11 +140,15 @@ diff_means <- function(variable, n_sims){
   null_dist <- boot_diffs %>% 
     mutate(centered_diffs = diffs + offset) %>% 
     select(centered_diffs)
-  obs_diff <- boot_diffs %>% 
-    summarize(obs_diff = mean(diffs)) %>% 
+  obs_diff_WE <- WE %>% 
+    summarize(obs_diff = mean(get(variable))) %>% 
     pull()
+  obs_diff_NA <- NorthAmerica %>% 
+    summarize(obs_diff = mean(get(variable))) %>% 
+    pull()
+  obs_diff <- obs_diff_WE - obs_diff_NA
   p_val <- null_dist %>% 
-    mutate(extreme = ifelse(centered_diffs > abs(obs_diff), 1, 0)) %>% 
+    mutate(extreme = ifelse(centered_diffs > obs_diff, 1, 0)) %>% 
     summarize(p_val = mean(extreme)) 
 
   return(list(p_val = p_val, null_dist = null_dist, obs_diff = obs_diff))
@@ -170,7 +176,7 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NA_ANZ_GDP = mean(GDP_per_capita))
 
-bootstrap <- diff_means(variable = "GDP_per_capita", 1000)
+bootstrap <- diff_means(variable = "GDP_per_capita", 100)
 
 bootstrap$p_val
 ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
@@ -195,7 +201,7 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NA_ANZ_Soc_Support = mean(Social_support))
 
-bootstrap <- diff_means(variable = "Social_support", 1000)
+bootstrap <- diff_means(variable = "Social_support", 100)
 
 bootstrap$p_val
 
@@ -222,7 +228,7 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NA_ANZ_Life_Choices = mean(Freedom_to_make_life_choices))
 
-bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 1000)
+bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 100)
 
 bootstrap$p_val
 
@@ -250,7 +256,7 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NA_ANZ_Gen = mean(Generosity))
 
-bootstrap <- diff_means(variable = "Generosity", 1000)
+bootstrap <- diff_means(variable = "Generosity", 100)
 
 bootstrap$p_val
 
@@ -287,7 +293,7 @@ worldhappiness %>%
   filter(Region == "Western Europe") %>%
   summarize(RestofW_life_expectancy = mean(Healthy_life_expectancy))
 
-bootstrap <- diff_means(variable = "Healthy_life_expectancy", 1000)
+bootstrap <- diff_means(variable = "Healthy_life_expectancy", 100)
 
 bootstrap$p_val
 
@@ -330,7 +336,7 @@ worldhappiness %>%
   filter(Region == "North America and ANZ") %>%
   summarize(NA_POC = mean(Perceptions_of_corruption))
 
-bootstrap <- diff_means(variable = "Perceptions_of_corruption", 2000)
+bootstrap <- diff_means(variable = "Perceptions_of_corruption", 100)
 
 bootstrap$p_val
 
