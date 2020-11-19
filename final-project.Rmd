@@ -255,15 +255,15 @@ ggplot(data = graph, aes(factor(region), Perceptions_of_corruption)) +
 ```
 ### Simulation based hypothesis testing
 
-Next, we conducted simulation-based hypothesis tests for each of the variables contributing to overall happiness score to evaluate whether there Western Europe has a statistically significantly higher mean score for a particular variable between the two regions. 
+Next, we conducted simulation-based hypothesis tests for each of the variables contributing to overall happiness score to evaluate whether there is a statistically significant difference the regions of Western Europe and North America.
 
 Each of the simulation-based hypothesis tests used to evaluate the variables contributing to overall happiness score will be evaluated at the $\alpha =$ 0.05 level.
 
-Generally, our null hypothesis states that the mean score for a particular variable in Western Europe is less than or equal to the mean score for that same variable in North America. Our alternative hypothesis therefore is that the mean score for a particular variable in Western Europe is greater than that of the mean score for that variable in North America. 
+Generally, our null hypothesis states that the mean score for a particular variable in Western Europe equal to the mean score for that same variable in North America. Our alternative hypothesis therefore is that the mean score for a particular variable in Western Europe is not equal to that of the mean score for that variable in North America. 
 
-$H_0$: $\mu_{WE}$ <= $\mu_{NA}$ 
+$H_0$: $\mu_{WE}$ = $\mu_{NA}$ 
 
-$H_A$: $\mu_{WE}$ > $\mu_{NA}$ 
+$H_A$: $\mu_{WE}$ != $\mu_{NA}$ 
 
 #### GDP per capita
 
