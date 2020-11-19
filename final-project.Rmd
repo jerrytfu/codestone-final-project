@@ -393,27 +393,27 @@ and conclude that there is an association between region of the world and happin
 
 #### GDP per capita:
 
-Since the calculated p-value of 0.15 is not significant at the $\alpha =$ 0.05 level, we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean GDP per capita score in Western Europe is greater than that of North America. 
+Since the calculated p-value of 0.145 is not significant at the $\alpha =$ 0.05 level, we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean GDP per capita score in Western Europe is greater than that of North America. 
 
 #### Social support:
 
-The calculated p-value of 0.08 is not significant at the $\alpha =$ 0.05 level, so we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean social support score in Western Europe is greater than that of North America.
+The calculated p-value of 0.083 is not significant at the $\alpha =$ 0.05 level, so we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean social support score in Western Europe is greater than that of North America.
 
 #### Freedom to make life choices
 
-Since the calculated p-value of 0.56 is not significant at the $\alpha =$ 0.05 level, we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean freedom to make life choices score in Western Europe is greater than that of North America. 
+Since the calculated p-value of 0.556 is not significant at the $\alpha =$ 0.05 level, we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean freedom to make life choices score in Western Europe is greater than that of North America. 
 
 #### Generosity
 
-The calculated p-value of 0.45 is not significant at the $\alpha =$ 0.05 level, so we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean generosity score in Western Europe is greater than that of North America. 
+The calculated p-value of 0.468 is not significant at the $\alpha =$ 0.05 level, so we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean generosity score in Western Europe is greater than that of North America. 
 
 #### Life expectancy
 
-The calculated p-value of 0.01 is significant at the $\alpha =$ 0.05 level, so we can reject the null hypothesis. Therefore, there is statistically significant evidence to suggest that the mean life expectancy score in Western Europe is greater than that of North America. 
+The calculated p-value of 0.007 is significant at the $\alpha =$ 0.05 level, so we can reject the null hypothesis. Therefore, there is statistically significant evidence to suggest that the mean life expectancy score in Western Europe is greater than that of North America. 
 
 #### Perceptions of corruption
 
-Since the calculated p-value of 0.14 is not significant at the $\alpha =$ 0.05 level, we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean perceptions of corruption score in Western Europe is greater than that of North America. 
+Since the calculated p-value of 0.142 is not significant at the $\alpha =$ 0.05 level, we fail to reject the null hypothesis. Therefore, there is not statistically significant evidence to suggest that the mean perceptions of corruption score in Western Europe is greater than that of North America. 
 
 ## DISCUSSION
 
