@@ -23,9 +23,9 @@ Healthy Life Expectancy: Healthy Life expectancy is a measure calculated by comp
 
 Perceptions of Corruption: Perception of Corruption is a self-reported measure of whether or not respondents feel there is active corruption within government and business. Specifically, respondents were asked, “Is corruption widespread throughout the government or not” and “Is corruption widespread within businesses or not?” and responded to both with 0 or 1 (no or yes). The average for each respective country or region creates this value [3][4]. Note: A higher value for this measure represents a lower perception of corruption.
 
-Generosity:
+Generosity: Generosity is a measure of whether or not respondents act generously. Respondents were asked, “Have you donated money to a charity in the past month?” and responded with 0 or 1 (no or yes). Generosity is the residual of regressing the national average of this question with GDP [3][4].
 
-Freedom to Make Life Choices:
+Freedom to Make Life Choices: Freedom to make Life Choices is a self-reported measure of whether or not respondents feel they can do what they want with their lives. Respondents were asked, “Are you satisfied or dissatisfied with your freedom to choose what you do with your life?” and responded with 0 or 1 (no or yes). The average for each respective country or region creates this value [3][4].
 
 Generally, we want to explore the following question: what factors contribute to the differences in happiness scores between countries in North America versus Western Europe? Both regions are relatively comparable in terms of financial and political structures, but Western Europe contains the Nordic countries which consistently score highest in the World Happiness reports. With this, questions are raised as to what contributes to such happiness in this region of the world. 
 
