@@ -31,7 +31,7 @@ Generally, we want to explore the following question: what factors contribute to
 
 The countries included in North America for the purposes of this study are the United States, Canada, and Mexico. We altered the original categorizations of regions, in which Mexico was not included but Australia and New Zealand were, to align with more common understandings of the region of North America. The countries included in Western Europe are much more extensive, and were not changed from the original categorization. 
 
-Considering the concerning state of our world in 2020, including the worsening effects of climate change, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within nations and between regions across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust [5]. Eight years later, these paradoxes persit, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
+Considering the concerning state of our world in 2020, including the worsening effects of climate change, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within nations and between regions across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust [5]. Eight years later, these paradoxes persist, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
 
 
 ```{r setup-packages, message = FALSE, warning = FALSE, echo = FALSE}
@@ -135,7 +135,9 @@ chisq.test(chisq$happiness, chisq$Region, simulate.p.value = TRUE)
 
 ### Summary Statistics
 
-Description of summary statistics for methodology
+Next, we obtained the following summary statistics for both of the regions of 
+interest, North America and Western Europe. These values will be used in further
+testing.
 
 ```{r summary-statistics, echo = FALSE, fig.width = 6}
 WE <- worldhappiness %>% 
@@ -166,7 +168,8 @@ colnames(table) <- c("Happiness Score", "GDP", "Social Support",
 
 kbl(table, caption = "Figure 1: Mean Scores for World Happiness Report Categories") %>% 
   kable_styling(c("hover", "striped")) %>% 
-  column_spec(2, color = "blue")
+  column_spec(2, color = "blue") %>%
+  kable_styling(latex_options="scale_down")
 ```
 
 
@@ -216,7 +219,11 @@ diff_means <- function(variable, n_sims){
 
 ### Violin Plot Visualizations 
 
-Description of visualizations for methodology.
+Next, we construct violin plots to further visualize the differences in 
+distribution of respective happiness scores, and sects that might contribute to
+a country's overall happiness. Here, we plot happiness scores, GDP scores, 
+Social Support score, Life Expectancy score, Freedom to make Life Choices score,
+Generosity score, and Perceptions of Corruption score.
 
 ```{r score-distributions, echo = FALSE}
 graph <- worldhappiness %>% 
