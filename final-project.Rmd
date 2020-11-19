@@ -42,7 +42,7 @@ library(broom)
 library(kableExtra) #package for table
 ```
 
-### METHODOLOGY
+## METHODOLOGY
 
 First, we underwent data cleaning duties and loaded in the data sets, merged 2018 and 2019, and added in regions for countries which were missing a region.
 
@@ -118,7 +118,7 @@ $H_a$: There is an association between region of the world and happiness score.
 
 ```{r chi-sq-region-score, echo = FALSE}
 set.seed(714)
-quantile(worldhappiness$Score) #We base our categories on IQR
+#quantile(worldhappiness$Score) We base our categories on IQR
 chisq <- worldhappiness %>% 
   mutate(happiness = case_when(Score <= 4.51425 ~ "1",
                                Score <= 5.37950 ~ "2",
@@ -223,7 +223,9 @@ a country's overall happiness. Here, we plot mean happiness scores, GDP per capi
 Social Support score, Life Expectancy score, Freedom to make Life Choices score,
 Generosity score, and Perceptions of Corruption score. Western Europe had a larger spread for all the variables, and slight top heavy or bottom heavy skews for some of the variables such as Freedom to make Life Choices and Social Support. 
 
-```{r score-distributions, echo = FALSE}
+#### Figure 3: Violin Plots for Happiness Score Distribution
+
+```{r score-distributions, echo = FALSE, fig.width = 3, fig.height = 5}
 graph <- worldhappiness %>% 
   filter(Region == "North America and ANZ" | Region == "Western Europe") %>% 
   mutate(region = case_when(
@@ -237,57 +239,58 @@ ggplot(data = graph, aes(factor(region), Score)) +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "Overall happiness score",
-       title = "Distributions of overall happiness scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of overall",
+       subtitle = "happiness scores by region") 
 
 ggplot(data = graph, aes(factor(region), GDP_per_capita)) +
   geom_violin() +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "GDP per capita score",
-       title = "Distributions of GDP per capita scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of GDP per capita scores",
+       subtitle = " by region") 
 
 ggplot(data = graph, aes(factor(region), Social_support)) +
   geom_violin() +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "Social support score",
-       title = "Distributions of social support scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of social support",
+       subtitle = "scores by region") 
 
 ggplot(data = graph, aes(factor(region), Healthy_life_expectancy)) +
   geom_violin() +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "Healthy life expectancy score",
-       title = "Distributions of healthy life expectancy scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of healthy life",
+       subtitle = "expectancy scores by region") 
 
 ggplot(data = graph, aes(factor(region), Freedom_to_make_life_choices)) +
   geom_violin() +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "Freedom to make life choices score",
-       title = "Distributions of freedom to make life choices scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of freedom to",
+       subtitle = "make life choices scores by region") 
 
 ggplot(data = graph, aes(factor(region), Generosity)) +
   geom_violin() +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "Generosity score",
-       title = "Distributions of generosity scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of generosity",
+       subtitle = "scores by region") 
 
 ggplot(data = graph, aes(factor(region), Perceptions_of_corruption)) +
   geom_violin() +
   geom_boxplot(width = 0.1, outlier.color = "red") +
   labs(x = "Region",
        y = "Perceptions of corruption score",
-       title = "Distributions of perceptions of corruption scores by region",
-       subtitle = "Red points denoting outliers") 
+       title = "Distributions of perceptions",
+       subtitle = "of corruption scores by region") 
 ```
+
 ### Simulation based hypothesis testing
 
 Next, we conducted simulation-based hypothesis tests for each of the variables contributing to overall happiness score to evaluate whether there is a statistically significant difference the regions of Western Europe and North America.
@@ -300,9 +303,9 @@ $H_0$: $\mu_{WE}$ = $\mu_{NA}$
 
 $H_A$: $\mu_{WE}$ != $\mu_{NA}$ 
 
-#### GDP per capita
+#### Figure 4: Simulated Null Distributions of Difference in Means
 
-```{r gdp, echo = FALSE}
+```{r bootstrap, echo = FALSE, fig.width = 3, fig.height = 3}
 set.seed(714)
 
 bootstrap <- diff_means(variable = "GDP_per_capita", 1000)
@@ -314,15 +317,11 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in GDP per capita", 
+  labs(title = "Simulated Null Distribution",
+       subtitle = "GDP per capita",
        x = "Difference in mean",
        y = "Count")
-```
 
-
-#### Social Support
-
-```{r social-support, echo = FALSE}
 set.seed(949)
 
 bootstrap <- diff_means(variable = "Social_support", 1000)
@@ -334,15 +333,11 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in social support", 
+  labs(title = "Simulated Null Distribution",
+       subtitle = "Social Support",
        x = "Difference in mean",
        y = "Count")
-```
 
-
-#### Freedom to make life choices 
-
-```{r freedom-life-choices, echo = FALSE}
 set.seed(1)
 
 bootstrap <- diff_means(variable = "Freedom_to_make_life_choices", 1000)
@@ -354,14 +349,10 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in freedom to make life choices",
+  labs(title = "Simulated Null Distribution",
+       subtitle = "Freedom to Make Life Choices",
        x = "Difference in mean", y = "Count")
-```
 
-
-#### Generosity
-
-```{r generosity, echo = FALSE}
 set.seed(2)
 
 bootstrap <- diff_means(variable = "Generosity", 1000)
@@ -373,14 +364,10 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in generosity",
+  labs(title = "Simulated Null Distribution",
+       subtitle = "Generosity",
        x = "Difference in mean", y = "Count")
-```
 
-
-#### Life Expectancy
-
-```{r LE, echo = FALSE}
 set.seed(2020)
 
 bootstrap <- diff_means(variable = "Healthy_life_expectancy", 1000)
@@ -392,49 +379,42 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
                  fill = "skyblue", 
                  color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated null distribution of difference in life expectancy", 
+  labs(title = "Simulated Null Distribution",
+       subtitle = "Life Expectancy",
        x = "Difference in mean",
        y = "Count")
-```
 
-
-#### Perceptions of Corruption
-
-```{r poc, echo = FALSE}
-#Set seed
 set.seed(5318008)
 
 bootstrap <- diff_means(variable = "Perceptions_of_corruption", 1000)
 
 table_pvals[6] <- bootstrap$p_val
 
-#Graph
 ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   geom_histogram(binwidth = 0.01, fill = "skyblue", color = "darkblue") +
   geom_vline(xintercept = bootstrap$obs_diff, color = "tomato", lwd = 2) +
-  labs(title = "Simulated Null Distribution of Difference in mean Perceptions of Corruption", 
+  labs(title = "Simulated Null Distribution",
+       subtitle = "Perceptions of Corruption",
        x = "Difference in Mean",
        y = "Count")
-
 ```
 
+Based on our bootstrapped distributions, we calculated these p-values.
 
-#### Table of P-vals
-
-```{r p-vals, echo = FALSE, fig.width = 6}
+```{r p-vals, echo = FALSE}
 colnames(table_pvals) <- c("GDP", "Social Support", "Freedom", "Generosity", 
                            "Healthy Life Expectancy", "Corruption")
 
-kbl(table_pvals, caption = "Figure 4: P-values for Hypothesis Tests Difference in Means") %>% 
+kbl(table_pvals, caption = "Figure 5: P-values for Hypothesis Tests Difference in Means") %>% 
   kable_styling(c("hover", "striped")) %>% 
   column_spec(5, color = "blue") %>%
-  kable_styling(latex_options="scale_down")
+  kable_styling(latex_options = "scale_down") %>% 
+  kable_styling(latex_options = "HOLD_position")
 ```
-
 
 ## RESULTS 
 
-#### Chi-square test
+### Chi-square test
 With our simulated p-value of 0.0004998 which is less than our $\alpha = 0.05$, we do have
 sufficient evidence to reject the null hypothesis in favor of the alternative hypothesis
 and conclude that there is an association between which region of the world a country is in and happiness score. Our chi-squared test statistic is 273.46 with NA degrees of freedom. The pattern we noticed in the map is statistically significant.
