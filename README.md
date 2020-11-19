@@ -72,4 +72,4 @@ An IQR-based measure of varying levels of happiness.
 ### Region
 - Categorical
 
-Region of the world.
+Region of the world. 
