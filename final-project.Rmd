@@ -439,9 +439,13 @@ Generally, quantifying happiness is a fascinating concept that takes into accoun
 ## BIBLIOGRAPHY
 
 [1] Gallup World Poll. (2014, October 14). How does the Gallup world poll work? Gallup.com. https://www.gallup.com/178667/gallup-world-poll-work.aspx
+
 [2] Helliwell, J., Layard, R., & Sachs, J. (2018). World Happiness Report 2018, New York: Sustainable Development Solutions Network.
+
 [3] Helliwell, J., Layard, R., & Sachs, J. (2019). World Happiness Report 2019, New York: Sustainable Development Solutions Network.
+
 [4] Helliwell, John F., Richard Layard, and Jeffrey Sachs, eds. 2012. World Happiness Report 2012. New York: UN Sustainable Development Solutions Network.
+
 [5] https://www.investopedia.com/terms/n/nordic-model.asp
 
 
