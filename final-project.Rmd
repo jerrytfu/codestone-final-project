@@ -65,18 +65,18 @@ worldhappiness <- worldhappiness %>%
 ```{r add-region, message = FALSE, echo = FALSE}
 #Add regions to rows with missing Region column
 worldhappiness <- worldhappiness %>% 
-  mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region),
-         Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region),
-         Region = ifelse(Country == "Trinidad & Tobago", "Latin America and Caribbean", Region),
-         Region = ifelse(Country == "Belize", "Latin America and Caribbean", Region),
-         Region = ifelse(Country == "Northern Cyprus", "Middle East and North Africa", Region),
-         Region = ifelse(Country == "Hong Kong", "East Asia", Region),
-         Region = ifelse(Country == "Bhutan", "South Asia", Region),
-         Region = ifelse(Country == "Somalia", "Middle East and North Africa", Region),
-         Region = ifelse(Country == "Sudan", "Middle East and North Africa", Region),
-         Region = ifelse(Country == "Angola", "Middle East and North Africa", Region),
-         Region = ifelse(Country == "Syria", "Middle East and North Africa", Region),
-         Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
+  mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region)) %>%
+  mutate(Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region)) %>%
+  mutate(Region = ifelse(Country == "Trinidad & Tobago", "Latin America and Caribbean", Region)) %>%
+  mutate(Region = ifelse(Country == "Belize", "Latin America and Caribbean", Region)) %>%
+  mutate(Region = ifelse(Country == "Northern Cyprus", "Middle East and North Africa", Region)) %>%
+  mutate(Region = ifelse(Country == "Hong Kong", "East Asia", Region)) %>%
+  mutate(Region = ifelse(Country == "Bhutan", "South Asia", Region)) %>%
+  mutate(Region = ifelse(Country == "Somalia", "Middle East and North Africa", Region)) %>%
+  mutate(Region = ifelse(Country == "Sudan", "Middle East and North Africa", Region)) %>%
+  mutate(Region = ifelse(Country == "Angola", "Middle East and North Africa", Region)) %>%
+  mutate(Region = ifelse(Country == "Syria", "Middle East and North Africa", Region)) %>%
+  mutate(Region = ifelse(Country == "North Macedonia", "Central and Eastern Europe", Region))
 ```
 
 ## METHODOLOGY
