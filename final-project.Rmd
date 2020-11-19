@@ -78,11 +78,11 @@ worldhappiness <- worldhappiness %>%
 
 ## METHODOLOGY
 
-### Chi-square test
+### World Happiness Scores Visualization
 
-Is there a relationship between region of the world and happiness score?
-
-Description of chi square test for methodology 
+To initially visualize the spread of happiness scores across the regions of 
+interest, we first created a choropleth map of the world, shaded to show 
+differences in average happiness score across each country. 
 
 ```{r world-map, fig.width = 10, fig.height = 5, echo = FALSE}
 world_map <- map_data("world") %>% 
@@ -94,8 +94,19 @@ ggplot(happiness_score_map, aes(x = long, y = lat, group = group)) +
   geom_polygon(aes(fill = Score), color = "white") +
   labs(title = "World Map", subtitle = "colored by Happiness Score", x = "", y = "") +
   scale_fill_viridis_c(option = "D")
+
+#Source: https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
 ```
-https://www.datanovia.com/en/blog/how-to-create-a-map-using-ggplot2/
+
+### Chi-square test
+
+Next, we ask the question: "Is there a relationship between region of the world
+and happiness score?" Hence, we must know if there is an association between the
+region in the world one lives in and the happiness score for that region. We
+used a chi-square test of independence to determine whether the relationship
+between the two aforementioned variables is statistically significant.
+
+-> explain choices in grouping... (sim.p.val? v.s. create new var?)
 
 $H_0$: There is no association between region of the world and happiness score.
 $H_a$: There is an association between region of the world and happiness score.
