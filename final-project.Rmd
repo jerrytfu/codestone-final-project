@@ -9,9 +9,9 @@ output:
 
 ## INTRODUCTION
 
-CodeStone chose to explore the data from the World Happiness Reports of 2018 and 2019, published by the Sustainable Development Network. According to the WHR, this data is derived from the Gallup World Poll, systematic telephone surveys and in person interviews in over 160 countries whose surveys claim to represent 80%+ of the population [1]. The calls are made via random phone number generation and randomly selecting households [2]. The data sets from each year include 312 cases, each representing the data for a particular country. The original variables in the data set included the overall rank according to happiness score, country name, happiness score, and then 6 variables that were used to calculate the happiness score in the WHR’s analysis. These are GDP per capita, social support, healthy life expectancy, freedom to make life choices, generosity, and perceptions of corruption, all of which are expanded upon below. Additionally, we added variables for year as well as region to further our analysis. 
+CodeStone chose to explore the data from the World Happiness Reports of 2018 and 2019, published by the Sustainable Development Network. According to the WHR, this data is derived from the Gallup World Poll, systematic telephone surveys and in person interviews in over 160 countries whose surveys claim to represent 80%+ of the population [1]. The calls are made via random phone number generation and randomly selecting households [2]. The data sets from each year include 312 cases (two for each country), each representing the data for a particular country. The original variables in the data set included the overall rank according to happiness score, country name, happiness score, and then 6 variables that were used to calculate the happiness score in the WHR’s analysis. These are GDP per capita, social support, healthy life expectancy, freedom to make life choices, generosity, and perceptions of corruption, all of which are expanded upon below. Additionally, we added variables for year as well as region to further our analysis. 
 
-Variable Sources and Definitions
+### Variable Sources and Definitions
 	
 Happiness Score: Happiness score is a self-reported measure of overall current life satisfaction. This was measured by asking respondents, “Please imagine a ladder, with steps numbered from 0 at the bottom to 10 at the top. The top of the ladder represents the best possible life for you and the bottom of the ladder represents the worst possible life for you. On which step of the ladder would you say you personally feel you stand at this time?” The average of these values represents respective countries and regions [3][4]. 
 
@@ -62,8 +62,8 @@ worldhappiness <- worldhappiness %>%
   left_join(country_region)
 ```
 
-```{r add-region, echo = FALSE}
-#add regions to rows with missing Region column
+```{r add-region, message = FALSE, echo = FALSE}
+#Add regions to rows with missing Region column
 worldhappiness <- worldhappiness %>% 
   mutate(Region = ifelse(Country == "Taiwan", "East Asia", Region),
          Region = ifelse(Country == "Qatar", "Middle East and North Africa", Region),
@@ -109,14 +109,21 @@ region in the world one lives in and the happiness score for that region. We
 used a chi-square test of independence to determine whether the relationship
 between the two aforementioned variables is statistically significant.
 
--> explain choices in grouping... (sim.p.val? v.s. create new var?)
+As happiness score is a quantitative variable, to implement the chi-square 
+test, we must first group happiness scores into distinct categories. However,
+selecting arbitrary ranges to define as happy vs. unhappy offers varied results;
+thus, we create 4 ranges based on IQR.
+
+We conduct the chi-square test at the $\alpha = 0.05$ level, using the 
+hypotheses below:
 
 $H_0$: There is no association between region of the world and happiness score.
+
 $H_a$: There is an association between region of the world and happiness score.
 
 ```{r chi-sq-region-score, echo = FALSE}
 set.seed(714)
-quantile(worldhappiness$Score)
+quantile(worldhappiness$Score) #We base our categories on IQR
 chisq <- worldhappiness %>% 
   mutate(happiness = case_when(Score <= 4.51425 ~ "1",
                                Score <= 5.37950 ~ "2",
@@ -130,7 +137,7 @@ chisq.test(chisq$happiness, chisq$Region, simulate.p.value = TRUE)
 
 Description of summary statistics for methodology
 
-```{r summary-statistics, echo = FALSE}
+```{r summary-statistics, echo = FALSE, fig.width = 6}
 WE <- worldhappiness %>% 
   filter(Region == "Western Europe")
 NorthAmerica <- worldhappiness %>%
