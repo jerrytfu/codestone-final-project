@@ -134,19 +134,21 @@ NorthAmerica <- worldhappiness %>%
 WE_summary_stats <- WE %>% 
   summarize(WE_mean_happiness = mean(Score), WE_mean_GDP = mean(GDP_per_capita), 
             WE_mean_social_support = mean(Social_support), 
-            WE_healthy_life_expectancy = mean(Healthy_life_expectancy),
-            WE_mean_generosity = mean(Generosity), WE_mean_corruption = mean(Perceptions_of_corruption))
+            WE_mean_healthy_life_expectancy = mean(Healthy_life_expectancy),
+            WE_mean_generosity = mean(Generosity), WE_mean_corruption = mean(Perceptions_of_corruption),
+            WE_mean_freedom = mean(Freedom_to_make_life_choices))
 
 NA_summary_stats <- NorthAmerica %>% 
   summarize(NA_mean_happiness = mean(Score), NA_mean_GDP = mean(GDP_per_capita), 
             NA_mean_social_support = mean(Social_support), 
             NA_healthy_life_expectancy = mean(Healthy_life_expectancy),
-            NA_mean_generosity = mean(Generosity), NA_mean_corruption = mean(Perceptions_of_corruption))
+            NA_mean_generosity = mean(Generosity), NA_mean_corruption = mean(Perceptions_of_corruption),
+            NA_mean_freedom = mean(Freedom_to_make_life_choices))
 
 table <- t(map2_dfr(WE_summary_stats, NA_summary_stats, ~ tibble(`Western Europe` = .x, `North America` = .y)))
 
 colnames(table) <- c("Happiness Score", "GDP", "Social Support", 
-                     "Healthy Life Expectancy", "Generosity", "Corruption")
+                     "Healthy Life Expectancy", "Generosity", "Corruption", "Freedom")
 
 kbl(table, caption = "Figure 1: Mean Scores for World Happiness Report Categories") %>% 
   kable_styling(c("hover", "striped")) %>% 
