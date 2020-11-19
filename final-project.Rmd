@@ -382,12 +382,10 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 
 ## RESULTS 
 
-### Chi-square test 
-
-With a simulated p-value of 0.1124 which is less than our $\alpha = 0.05$, we have
+#### Chi-square test
+With our simulated p-value of 0.1124 which is less than our $\alpha = 0.05$, we do not have
 sufficient evidence to reject the null hypothesis in favor of the alternative hypothesis
-and conclude that there is an association between region of the world and happiness score.
-
+and conclude that there is an association between which region of the world a country is in and happiness score. This might be because the distribution of happiness score across regions are not different enough to show an association between region and happiness.
 
 ### Simulation-based hypothesis tests
 
