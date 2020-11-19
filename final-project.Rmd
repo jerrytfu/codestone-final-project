@@ -116,7 +116,14 @@ $H_a$: There is an association between region of the world and happiness score.
 
 ```{r chi-sq-region-score, echo = FALSE}
 set.seed(714)
-chisq.test(worldhappiness$Score, worldhappiness$Region, simulate.p.value = TRUE)
+quantile(worldhappiness$Score)
+chisq <- worldhappiness %>% 
+  mutate(happiness = case_when(Score <= 4.51425 ~ "1",
+                               Score <= 5.37950 ~ "2",
+                               Score <= 6.17600 ~ "3",
+                               Score <= 7.76900 ~ "4"))
+
+chisq.test(chisq$happiness, chisq$Region, simulate.p.value = TRUE)
 ```
 
 ### Summary Statistics
