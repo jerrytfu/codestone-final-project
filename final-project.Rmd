@@ -1,7 +1,7 @@
 ---
-title: "Final Project: An Evaluation of the World Happiness Report"
+title: "Final Project: What Makes a Country Happy? Comparing Western Europe with North America"
 author: "Anna MacFarlane, Edgar Salas, Jerry Fu, Taalin RaoShah"
-date: "11/4/2020"
+date: "11/20/2020"
 output:
   pdf_document: default
   html_document: default
@@ -10,6 +10,12 @@ output:
 ## INTRODUCTION
 
 CodeStone chose to explore the data from the World Happiness Reports (WHR) of 2018 and 2019, published by the Sustainable Development Network. According to the WHR, this data is derived from the Gallup World Poll, systematic telephone surveys and in-person interviews in over 150 countries whose surveys claim to represent 80%+ of the population [1]. The calls are made via random phone number generation and randomly selecting households [2]. The Gallup World Poll changes the phrasing and types of questions they ask to determine a countries’ happiness every few years, but the procedure they used remained constant between 2018 and 2019. In order to get a better chance of obtaining accurate results, we chose to include both 2018 and 2019 in the same dataset, so that every country has two observations. The data set in total contains 312 rows, each pair representing the data for a particular country from both 2018 and 2019. The original variables in the data set included the overall rank according to happiness score, country name, happiness score, and then 6 variables that were used to calculate the happiness score in the WHR’s analysis. These are Gross Domestic Product (GDP) per Capita , Social Support, Healthy Life Expectancy, Freedom, Generosity, and Perceptions of Corruption, all of which are expanded upon below. Additionally, we added variables for year as well as region to further our analysis. 
+
+Generally, we want to explore the following question: what factors contribute to the differences in happiness scores between countries in North America versus Western Europe? Both regions are relatively comparable in terms of economic and political structures, but Western Europe contains the Nordic countries which consistently score highest in the World Happiness reports. Furthermore, there are notable lifestyle differences between North America and Western Europe. Accordingly, we are curious to analyze differences between the specific variables that make up the regions’ mean happiness scores.
+
+The countries included in North America for the purposes of this study are the United States, Canada, and Mexico. We altered the original categorizations of regions, in which Mexico was not included but Australia and New Zealand were, to align with common perceptions of the region of North America. Western Europe includes a group of 20 countries, which was not changed from the original categorization. 
+
+Considering the concerning state of our world in 2020, including the worsening effects of climate change, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within nations and between regions across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust [5]. Eight years later, these paradoxes persist, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
 
 ### Variable Sources and Definitions
 	
@@ -26,12 +32,6 @@ Perceptions of Corruption: Perception of Corruption is a self-reported measure o
 Generosity: Generosity is a measure of whether or not respondents act generously. Respondents were asked, “Have you donated money to a charity in the past month?” and responded with 0 or 1 (no or yes). Generosity is the residual of regressing the national average of this question with GDP [3][4].
 
 Freedom: Freedom is a self-reported measure of whether or not respondents feel they can do what they want with their lives. Respondents were asked, “Are you satisfied or dissatisfied with your freedom to choose what you do with your life?” and responded with 0 or 1 (no or yes). The average for each respective country or region creates this value [3][4].
-
-Generally, we want to explore the following question: what factors contribute to the differences in happiness scores between countries in North America versus Western Europe? Both regions are relatively comparable in terms of economic and political structures, but Western Europe contains the Nordic countries which consistently score highest in the World Happiness reports. Furthermore, there are notable lifestyle differences between North America and Western Europe. Accordingly, we are curious to analyze differences between the specific variables that make up the regions’ mean happiness scores.
-
-The countries included in North America for the purposes of this study are the United States, Canada, and Mexico. We altered the original categorizations of regions, in which Mexico was not included but Australia and New Zealand were, to align with common perceptions of the region of North America. Western Europe includes a group of 20 countries, which was not changed from the original categorization. 
-
-Considering the concerning state of our world in 2020, including the worsening effects of climate change, threats to democracy, and much more, we found it topical and insightful to evaluate what contributes to happiness within nations and between regions across the globe. The first World Happiness Report, published in 2012, presents the report as a means of grappling with the countless contradictions that exist in modern society such as the balance between pursuing economic success versus protecting the environment or the tradeoffs between personal profit and community trust [5]. Eight years later, these paradoxes persist, and the potential solutions are closely linked to definitions of morality, heightening their controversy. Considering the continued debate over such questions, we believe there are grounds for further investigation into trends of happiness over time and the factors that contribute to it.
 
 
 ```{r setup-packages, message = FALSE, warning = FALSE, echo = FALSE}
@@ -319,6 +319,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
        y = "Count")
 ```
 
+
 #### Social Support
 
 ```{r social-support, echo = FALSE}
@@ -338,6 +339,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
        y = "Count")
 ```
 
+
 #### Freedom to make life choices 
 
 ```{r freedom-life-choices, echo = FALSE}
@@ -355,6 +357,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
   labs(title = "Simulated null distribution of difference in freedom to make life choices",
        x = "Difference in mean", y = "Count")
 ```
+
 
 #### Generosity
 
@@ -374,6 +377,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
        x = "Difference in mean", y = "Count")
 ```
 
+
 #### Life Expectancy
 
 ```{r LE, echo = FALSE}
@@ -392,6 +396,7 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
        x = "Difference in mean",
        y = "Count")
 ```
+
 
 #### Perceptions of Corruption
 
@@ -413,7 +418,9 @@ ggplot(bootstrap$null_dist, aes(x = centered_diffs)) +
 
 ```
 
+
 #### Table of P-vals
+
 ```{r p-vals, echo = FALSE, fig.width = 6}
 colnames(table_pvals) <- c("GDP", "Social Support", "Freedom", "Generosity", 
                            "Healthy Life Expectancy", "Corruption")
@@ -423,6 +430,7 @@ kbl(table_pvals, caption = "Figure 4: P-values for Hypothesis Tests Difference i
   column_spec(5, color = "blue") %>%
   kable_styling(latex_options="scale_down")
 ```
+
 
 ## RESULTS 
 
